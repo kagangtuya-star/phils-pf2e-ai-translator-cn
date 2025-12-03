@@ -10,51 +10,105 @@ export class DictionaryLoader {
 
         const dictionary = {};
         const packDir = "modules/lang-de-pf2e/translation/de/compendium";
+        const systemFile = "modules/lang-de-pf2e/translation/de/de.json";
 
         try {
             console.log("Phil's Journal Translator | Loading official translations...");
-            // Use FilePicker to list files in the directory
+
+            // 1. Load System Translations (de.json AND en.json)
+            try {
+                const sysResponseDe = await fetch(systemFile);
+                const sysJsonDe = await sysResponseDe.json();
+
+                // Try to fetch English system file from standard path
+                const sysResponseEn = await fetch("systems/pf2e/lang/en.json");
+                const sysJsonEn = await sysResponseEn.json();
+
+                if (sysJsonDe && sysJsonEn) {
+                    // Helper to recursively traverse and map
+                    const traverse = (objEn, objDe) => {
+                        for (const key in objEn) {
+                            if (objDe.hasOwnProperty(key)) {
+                                const valEn = objEn[key];
+                                const valDe = objDe[key];
+
+                                if (typeof valEn === 'object' && valEn !== null && typeof valDe === 'object' && valDe !== null) {
+                                    traverse(valEn, valDe);
+                                } else if (typeof valEn === 'string' && typeof valDe === 'string') {
+                                    // Filter out long sentences, IDs, or identical values
+                                    if (valEn.length > 2 && valEn.length < 50 && valEn !== valDe) {
+                                        // Avoid replacing variables like {0} or HTML
+                                        if (!valEn.includes("{") && !valEn.includes("<")) {
+                                            dictionary[valEn] = valDe;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    traverse(sysJsonEn, sysJsonDe);
+                    console.log(`Phil's Journal Translator | Loaded ${Object.keys(dictionary).length} system terms from en/de comparison.`);
+                }
+
+                // Explicitly add Perception if missed (it might be "Perception Check" in en.json vs "Wahrnehmung" in de.json)
+                if (!dictionary["Perception"]) dictionary["Perception"] = "Wahrnehmung";
+
+            } catch (err) {
+                console.warn("Phil's Journal Translator | Failed to load system translations (en.json/de.json comparison):", err);
+
+                // Fallback: Load at least de.json for known keys if en.json fails
+                try {
+                    const sysResponse = await fetch(systemFile);
+                    const sysJson = await sysResponse.json();
+                    if (sysJson && sysJson.PF2E) {
+                        const pf2e = sysJson.PF2E;
+                        const add = (key, value) => { if (key && value && typeof value === 'string') dictionary[key] = value; };
+
+                        if (pf2e.Skill) Object.entries(pf2e.Skill).forEach(([k, v]) => add(k, v));
+                        const abilityMap = { "Strength": pf2e.AbilityStr, "Dexterity": pf2e.AbilityDex, "Constitution": pf2e.AbilityCon, "Intelligence": pf2e.AbilityInt, "Wisdom": pf2e.AbilityWis, "Charisma": pf2e.AbilityCha };
+                        Object.entries(abilityMap).forEach(([k, v]) => add(k, v));
+                        add("Perception", "Wahrnehmung");
+                    }
+                } catch (e) { console.error("Fallback loading failed", e); }
+            }
+
+            // 2. Load Compendium Translations
             const browseResult = await FilePicker.browse("user", packDir);
             const files = browseResult.files.filter(f => f.endsWith(".json"));
 
-            // Allowed file patterns (Regex)
-            // We only want to load translations for specific game entities to avoid generic terms.
             const allowedPatterns = [
-                /.*-bestiary\.json$/,       // All Bestiaries (Monsters)
-                /^pf2e\.equipment-srd\.json$/, // Items/Equipment
-                /^pf2e\.spells-srd\.json$/,    // Spells
-                /^pf2e\.hazards\.json$/,       // Hazards
-                /^pf2e\.vehicles\.json$/,      // Vehicles
-                /^pf2e\.deities\.json$/,       // Deities
-                /^pf2e\.ancestries\.json$/,    // Ancestries
-                /^pf2e\.backgrounds\.json$/,   // Backgrounds
-                /^pf2e\.heritages\.json$/,     // Heritages
-                /^pf2e\.classes\.json$/,       // Classes
-                /^pf2e\.kingmaker-features\.json$/, // Kingmaker Kingdom Rules
-                /^pf2e\.adventure-specific-actions\.json$/, // Specific Adventure Actions
-
-                // Re-added per user request to cover more terms (Crafting, Prone, etc.)
-                // Must be paired with blocklist to avoid "Stand" -> "Aufstehen"
-                /^pf2e\.actionspf2e\.json$/,   // Actions (Crafting, etc.)
-                /^pf2e\.classfeatures\.json$/, // Class Features
-                /^pf2e\.journals\.json$/,      // Journal UI (Classes, etc.)
-                /^pf2e\.conditionitems\.json$/,// Conditions (Prone, Flat-footed)
-                /^pf2e\.feats-srd\.json$/,     // Feats
-                /^pf2e\.npc-gallery\.json$/    // NPCs
+                /.*-bestiary\.json$/,
+                /^pf2e\.equipment-srd\.json$/,
+                /^pf2e\.spells-srd\.json$/,
+                /^pf2e\.hazards\.json$/,
+                /^pf2e\.vehicles\.json$/,
+                /^pf2e\.deities\.json$/,
+                /^pf2e\.ancestries\.json$/,
+                /^pf2e\.backgrounds\.json$/,
+                /^pf2e\.heritages\.json$/,
+                /^pf2e\.classes\.json$/,
+                /^pf2e\.kingmaker-features\.json$/,
+                /^pf2e\.adventure-specific-actions\.json$/,
+                /^pf2e\.actionspf2e\.json$/,
+                /^pf2e\.classfeatures\.json$/,
+                /^pf2e\.journals\.json$/,
+                /^pf2e\.conditionitems\.json$/,
+                /^pf2e\.feats-srd\.json$/,
+                /^pf2e\.npc-gallery\.json$/
             ];
 
-            // Terms to explicitly exclude from the dictionary (blocklist)
-            // These are generic terms found in the above files that cause bad translations.
             const blockedTerms = new Set([
                 "I", "A", "An", "The", "In", "On", "At", "To", "For", "Of", "With", "By",
                 "Stand", "Cause", "Classes", "Turn", "Round", "Level", "Die", "Hit", "Miss",
                 "Name", "Description", "Source", "Type", "Traits", "Rarity", "Price", "Usage", "Bulk",
-                "Stride", "Strike", "Step", "Interact", "Drop", "Leap", "Escape", "Seek"
+                "Stride", "Strike", "Step", "Interact", "Drop", "Leap", "Escape", "Seek",
+                // Generic terms that are also Conditions/Attitudes but shouldn't be auto-replaced
+                "Hidden", "Observed", "Concealed", "Friendly", "Helpful", "Hostile", "Indifferent", "Unfriendly"
             ]);
 
             for (const file of files) {
-                // Check if file matches any allowed pattern
-                const fileName = file.split("/").pop(); // Get just the filename
+                const fileName = file.split("/").pop();
                 if (!allowedPatterns.some(pattern => pattern.test(fileName))) {
                     continue;
                 }
@@ -63,18 +117,11 @@ export class DictionaryLoader {
                     const response = await fetch(file);
                     const json = await response.json();
 
-                    // Structure is usually { "entries": { "English Name": { "name": "German Name" } } }
                     if (json.entries) {
                         for (const [key, value] of Object.entries(json.entries)) {
-                            // Only add if there is a translation and it's different
                             if (value.name && key !== value.name) {
-                                // Skip blocked terms
                                 if (blockedTerms.has(key)) continue;
-
-                                // Skip very short terms (<= 2 chars) to avoid false positives like "I", "A", "Of"
-                                // unless they are specifically whitelisted (none for now)
                                 if (key.length <= 2) continue;
-
                                 dictionary[key] = value.name;
                             }
                         }
@@ -86,7 +133,6 @@ export class DictionaryLoader {
             console.log(`Phil's Journal Translator | Loaded ${Object.keys(dictionary).length} official translations.`);
         } catch (err) {
             console.error("Phil's Journal Translator | Error loading official translations:", err);
-            // Return empty dictionary on error to allow the app to continue
             return {};
         }
 

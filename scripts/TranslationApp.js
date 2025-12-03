@@ -1,5 +1,7 @@
 import { loc, resolvePrompt, getCleanData, getContextDescription, getGlossaryContent, processUpdate, addToGlossary, MODULE_ID, injectOfficialTranslations } from './TranslationLogic.js';
 
+const { FormApplication, Dialog, JournalEntry, JournalEntryPage, foundry, game, ui, $ } = /** @type {any} */ (globalThis);
+
 const THEMES = {
     gemini: { url: "https://gemini.google.com/app" },
     chatgpt: { url: "https://chatgpt.com/" },
@@ -64,6 +66,10 @@ export class TranslationAssistant extends FormApplication {
                     }
 
                     if (doc) {
+                        if (!doc.isOwner) {
+                            ui.notifications.warn(loc('WarnNoPermission') || "You do not have permission to translate this Journal (Required: Owner).");
+                            return;
+                        }
                         html.closest('.app').find('.close').click(); // Close picker
                         new TranslationDialog(doc).render(true); // Open actual tool
                     } else {
@@ -72,9 +78,9 @@ export class TranslationAssistant extends FormApplication {
                 });
 
                 html.find('#btn-select-journal').click(() => {
-                    const journals = game.journal.contents;
+                    const journals = globalThis.game.journal?.contents.filter(j => j.isOwner) || [];
                     if (journals.length === 0) {
-                        ui.notifications.warn(loc('WarnNoJournals') || "No Journals found.");
+                        ui.notifications.warn(loc('WarnNoJournalsOwned') || "No journals found that you own.");
                         return;
                     }
 
@@ -99,6 +105,10 @@ export class TranslationAssistant extends FormApplication {
                                     const id = h.find('#journal-select').val();
                                     const selectedDoc = game.journal.get(id);
                                     if (selectedDoc) {
+                                        if (!selectedDoc.isOwner) {
+                                            ui.notifications.warn(loc('WarnNoPermission') || "You do not have permission to translate this Journal (Required: Owner).");
+                                            return;
+                                        }
                                         html.closest('.app').find('.close').click(); // Close main picker
                                         new TranslationDialog(selectedDoc).render(true);
                                     }
