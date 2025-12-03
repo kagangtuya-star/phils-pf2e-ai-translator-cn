@@ -17,6 +17,7 @@ The module acts as an intelligent "Prompt Engineer". It prepares the text from y
 * **Batch Translation:** Translate multiple pages at once.
 * **Glossary Support:** Automatically generates a glossary of names and terms to ensure consistent translation across pages.
 * **Smart Paste:** Automatically finds and extracts the JSON code block from the AI response.
+* **Official Translation Integration:** Checks the installed German Pathfinder 2e system module for existing translations to ensure consistency with official terms.
 * **Context-Aware:** Preserves HTML formatting and links safely.
 
 ## 📦 Installation
@@ -40,7 +41,7 @@ The module acts as an intelligent "Prompt Engineer". It prepares the text from y
 
 ---
 
-# 🇩🇪 Deutsche Beschreibung
+# Deutsche Anleitung
 
 **Übersetze deine Foundry VTT Journale kostenlos mit KI.**
 
@@ -48,17 +49,33 @@ Phil's Pf2e Ai Translator verbindet deine Foundry VTT Welt mit der Power moderne
 
 ## 🚀 Funktionen
 
-* **Kostenlos:** Nutze die Web-Interfaces der KI-Anbieter.
-* **Batch-Übersetzung:** Mehrere Seiten auf einmal übersetzen.
-* **Glossar-Support:** Hält Namen und Begriffe konsistent.
-* **Smart Paste:** Filtert automatisch den Code aus der KI-Antwort.
-* **Formatierung:** HTML und Links bleiben erhalten.
+* **Kostenlos:** Nutze die Web-Interfaces der KI-Anbieter (keine API-Kosten).
+* **Batch-Übersetzung:** Übersetze mehrere Seiten oder ganze Journale auf einmal.
+* **Glossar-Support:** Erstellt automatisch ein Glossar für Namen und Begriffe, damit die Übersetzung über alle Seiten hinweg konsistent bleibt.
+* **Smart Paste:** Du kannst die gesamte Antwort der KI kopieren. Das Modul filtert automatisch den JSON-Code heraus.
+* **Offizielle Übersetzung:** Prüft das installierte deutsche Pathfinder 2e System-Modul auf existierende Übersetzungen, um Konsistenz mit offiziellen Begriffen zu garantieren.
+* **Sicher:** HTML-Formatierungen und Links bleiben erhalten.
 
 ## 📦 Installation
-Nutze diese Manifest URL:
- ```
+
+1.  Öffne Foundry VTT.
+2.  Gehe zum Reiter **Add-on Modules**.
+3.  Klicke auf **Install Module**.
+4.  Füge die folgende **Manifest URL** unten ein:
+    ```
     https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json
- ```
+    ```
+5.  Klicke auf **Install**.
+
+## 📖 Bedienung
+
+1.  **Translator öffnen:** Gehe in das Journal-Verzeichnis und klicke auf den **"KI Übersetzungs-Assistent"** Button.
+2.  **Inhalt wählen:** Wähle das Journal und die Seiten aus, die du übersetzen möchtest.
+3.  **Prompt generieren:** Das Modul erstellt einen optimierten Befehl. Klicke auf **"Prompt kopieren"**.
+4.  **KI fragen:** Füge den Text bei Gemini/ChatGPT ein und kopiere die **gesamte Antwort**.
+5.  **Update:** Klicke in Foundry auf **"Einfügen"** und dann auf **"Journal aktualisieren"**.
+
+---
 
 ## ❤️ Support the Development
 If you enjoy this module and want to support open-source development for Foundry VTT, check out my Patreon!
