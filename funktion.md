@@ -34,7 +34,7 @@ Damit die KI nicht halluziniert und aus einem *"Fireball"* plötzlich eine *"pik
 Das Modul ist ein Stalker. Es durchwühlt obsessiv die Dateien des **"Pathfinder 2 Deutsch"**-Systems.
 * Es liest die Systemdateien (`en.json` vs. `de.json`) und lernt Vokabeln. Es weiß, dass *Agile* = *Agil* ist.
 * Es bricht in die Kompendien ein (Bestiarien, Zauber, Feats). Es scannt tausende Einträge, nur um sicherzugehen, dass es den korrekten deutschen Namen für *"Mage Hand"* kennt.
-* **Der Effekt:** Es baut sich ein gigantisches Wörterbuch im RAM auf und schreit die KI an: *"WAG ES NICHT, 'SNEAK ATTACK' ZU ÜBERSETZEN! DAS HEISST 'HINTERHALT', DU STÜCK SILIZIUM!"*
+* **Der Effekt:** Es baut sich ein gigantisches Wörterbuch im RAM auf und schreit die KI an: *"WAG ES NICHT, 'MAGE HAND' ZU ÜBERSETZEN! DAS HEISST 'TELEKINETISCHE HAND', DU STÜCK SILIZIUM!"*
 
 ### 2. Deine Hausregeln (Das "AI Glossary")
 Vielleicht bist du einer dieser GMs, die alles besser wissen. Gut so!
@@ -99,3 +99,4 @@ Weil wir wissen, dass Software von Menschen gemacht wird (und Menschen Fehler ma
 4.  **Bier trinken:** Das Modul prüft, ob die KI Mist gebaut hat, macht ein Backup und speichert dann erst.
 
 Jetzt geh und erschaffe Welten (oder klau sie aus englischen Modulen, ich verpetz dich nicht). 🤖✨
+
