@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.3 (December 10, 2025)
+*   **Missing Term Detection**: The module now detects if the AI completely deletes a protected glossary term (e.g. replacing `#54:Bewegungsrate` with `Geschwindigkeit` without the tag). It flags this as `[GELÖSCHT / FEHLT]`.
+*   **Context-Aware Conflict Dialog**: When a conflict occurs (Changed or Missing term), the dialog now shows the **Original Sentence** (Context) where the term appeared. This helps you decide whether to accept the AI's change or restore the original.
+*   **Logic**: Improved `processUpdate` to re-simulate the original state for accurate context extraction.
+
 ## v1.2.2 (December 10, 2025)
 *   **Smart Auto-Next-Batch**: The module now remembers if you are in "Translation Mode" or "Grammar Check Mode".
 *   **Workflow Optimization**: After finishing a batch, it automatically opens the next *relevant* batch (e.g., if you are grammar checking, it finds the next page that hasn't been checked yet).

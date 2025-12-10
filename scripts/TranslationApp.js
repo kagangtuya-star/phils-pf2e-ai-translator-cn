@@ -466,15 +466,18 @@ function showConflictDialog(doc, jsonText, conflicts, processingMode = 'translat
     let itemsHtml = "<ul style='padding-left:0; list-style:none;'>";
     conflicts.forEach(c => {
         itemsHtml += `
-        <li style="margin-bottom:10px; padding:5px; background:#ddd; border-radius:3px;">
-            <div style="font-weight:bold; color:#d00;">${loc('LabelConflictChanged') || "Term Changed:"}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <div style="text-decoration:line-through; color:#777;">${c.original}</div>
-                    <div style="color:#007700; font-weight:bold;">${c.current}</div>
+        <li style="margin-bottom:10px; padding:5px; background:#ddd; border-radius:3px; border:1px solid #ccc;">
+            <div style="font-weight:bold; color:#d00; margin-bottom:5px;">${loc('LabelConflictChanged') || "Term Changed/Missing:"}</div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="flex:1; margin-right:10px;">
+                    <div style="text-decoration:line-through; color:#777; font-weight:bold;">${c.original}</div>
+                    <div style="color:#007700; font-weight:bold; margin-bottom:5px;">${c.current}</div>
+                    
+                    ${c.originalContext ? `<div style="font-size:0.85em; color:#555; background:#eee; padding:2px; margin-top:2px;">Original Context: <i>"${c.originalContext}"</i></div>` : ""}
+                    ${c.newContext && c.current !== "[GELÖSCHT / FEHLT]" ? `<div style="font-size:0.85em; color:#555; background:#eee; padding:2px; margin-top:2px;">New Context: <i>"${c.newContext}"</i></div>` : ""}
                 </div>
-                <div style="text-align:right;">
-                     <label style="font-size:0.9em;">
+                <div style="text-align:right; min-width:80px;">
+                     <label style="font-size:0.9em; cursor:pointer;">
                         <input type="checkbox" class="conflict-choice" data-id="${c.id}" data-original="${c.original}" data-current="${c.current}">
                         ${loc('LabelKeepNew') || "Keep New"}
                      </label>

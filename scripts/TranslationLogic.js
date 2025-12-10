@@ -314,11 +314,52 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
             delete jsonData._id;
 
             // --- CLEANUP START ---
-            // 1. Check for Glossary Conflicts (Grammar Check Protection)
-            // Parse [[#ID:Term]] and compare with GLOSSARY_MAP
+            // --- CLEANUP START ---
+            // 1. Check for Glossary Conflicts (Grammar Check Protection) & MISSING Terms
+
+            // Helpers for Context Extraction
+            const extractContext = (obj, id) => {
+                let context = null;
+                const findContext = (o) => {
+                    if (context) return;
+                    if (typeof o === 'string') {
+                        if (o.includes(id)) {
+                            // Found the string containing the ID. Extract sentence.
+                            // Split by sentence delimiters.
+                            // We need to match the specific occurrence.
+                            // Simple approach: Take approx 100 chars around it.
+                            const index = o.indexOf(id);
+                            const start = Math.max(0, index - 60);
+                            const end = Math.min(o.length, index + id.length + 60);
+                            context = "..." + o.substring(start, end).trim() + "...";
+                        }
+                    } else if (Array.isArray(o)) {
+                        o.forEach(i => findContext(i));
+                    } else if (typeof o === 'object' && o !== null) {
+                        for (const k in o) findContext(o[k]);
+                    }
+                };
+                findContext(obj);
+                return context;
+            };
+
+            // To get ORIGINAL Context, we need the original text with markers.
+            // We can regenerate it by running injectGlossaryMarkers on the doc again.
+            // But we must be careful not to pollute GLOSSARY_MAP again or we rely on the fact that it's deterministic.
+            // Actually, we can use a temporary map or just re-run it and assume same IDs if deterministic.
+            // Our termCounter depends on order. It IS deterministic if dictionary is same.
+
+            // Let's create a "Reference Doc" with markers.
+            // IMPORTANT: We need clean data first (English/Original), then inject markers.
+            // BUT wait, doc is the source. getCleanData(doc) gets current state.
+            // If we utilize getCleanData(doc) + injectGlossaryMarkers, we get the text with [[#1:Term]].
+            // We can use this object to find "Original Context".
+            const referenceData = await injectGlossaryMarkers(getCleanData(doc, true));
+
+
             const conflicts = [];
 
-            // Helper to recursively scan for conflicts (without modifying yet)
+            // Check for MODIFIED Terms
             const scanConflicts = (obj) => {
                 if (typeof obj === 'string') {
                     const matches = [...obj.matchAll(/\[\[#(.*?):(.*?)\]\]/g)];
@@ -328,10 +369,16 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
                         const originalTerm = GLOSSARY_MAP.get(id);
 
                         if (originalTerm && returnedTerm !== originalTerm) {
+                            // Context Extraction
+                            const originalContext = extractContext(referenceData, `[[${id}:${originalTerm}]]`);
+                            const newContext = extractContext(jsonData, `[[${id}:${returnedTerm}]]`);
+
                             conflicts.push({
                                 id: id,
                                 original: originalTerm,
-                                current: returnedTerm
+                                current: returnedTerm,
+                                originalContext: originalContext || "(Context not found)",
+                                newContext: newContext || "(Context not found)"
                             });
                         }
                     }
@@ -343,11 +390,35 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
             };
             scanConflicts(jsonData);
 
+            // Check for MISSING Terms (The 'Deleted' Case)
+            // Iterate over all keys in GLOSSARY_MAP and check if they exist in jsonData
+            const allIds = Array.from(GLOSSARY_MAP.keys());
+            // We need a helper to check existence efficiently? JSON stringify check is fast enough for IDs.
+            const jsonString = JSON.stringify(jsonData);
+
+            for (const id of allIds) {
+                // Check if ID is present (e.g. #54)
+                // Note: ID could be part of another string, but with [[#ID: it's specific.
+                // We check for `[[${id}:`
+                if (!jsonString.includes(`[[${id}:`)) {
+                    const originalTerm = GLOSSARY_MAP.get(id);
+                    const originalContext = extractContext(referenceData, `[[${id}:${originalTerm}]]`);
+
+                    conflicts.push({
+                        id: id,
+                        original: originalTerm,
+                        current: "[GELÖSCHT / FEHLT]",
+                        originalContext: originalContext || "(Context not found)",
+                        newContext: "(Term deleted by AI)"
+                    });
+                }
+            }
+
+
             if (conflicts.length > 0) {
                 // Return conflicts to UI instead of proceeding
                 return { success: false, status: 'conflict', conflicts: conflicts, jsonData: jsonData };
             }
-
 
             // 2. Remove [[...]] markers but KEEP content
             const cleanGrammarMarkers = (obj) => {
