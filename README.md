@@ -9,6 +9,12 @@
 <a href="Updates.md"><img src="https://img.shields.io/badge/CHECK-Changelog-blue" style="height: 25px;"></a>
 <a href="https://www.patreon.com/PhilsModules"><img src="https://img.shields.io/badge/SUPPORT-Patreon-ff424d?logo=patreon" style="height: 25px;"></a>
 
+> [!CAUTION]
+> ### ⚖️ Private Use Only / Nur für den privaten Gebrauch
+> Translations of copyrighted works (e.g. Pathfinder adventures) created with this module may **only be used for private purposes**. Publication, distribution, or commercial use (sale) is prohibited.
+>
+> Die mit diesem Modul erstellten Übersetzungen urheberrechtlich geschützter Werke dürfen **nur für den privaten Gebrauch** verwendet werden. Eine Veröffentlichung, Verbreitung oder kommerzielle Nutzung (Verkauf) ist nicht gestattet.
+
 **Automatisierte Übersetzung von Foundry VTT Journalen mit KI (ChatGPT, Claude, Gemini, etc.)**
 
 Dieses Modul hilft dir, **große Abenteuer-Module** oder lange Texte in Foundry VTT schnell und konsistent zu übersetzen. Es ist speziell für **PF2e** optimiert, funktioniert aber auch systemunabhängig.
@@ -68,6 +74,11 @@ Phil's Pf2e Ai Translator verbindet deine Foundry VTT Welt mit der Power moderne
 4.  **KI fragen:** Füge den Text bei Gemini/ChatGPT ein und kopiere die **gesamte Antwort**.
 5.  **Update:** Klicke in Foundry auf **"Einfügen"** und dann auf **"Journal aktualisieren"**.
 
+4.  **KI fragen:** Füge den Text bei Gemini/ChatGPT ein und kopiere die **gesamte Antwort**.
+5.  **Update:** Klicke in Foundry auf **"Einfügen"** und dann auf **"Journal aktualisieren"**.
+
+---
+
 ---
 
 # English Instructions
@@ -105,6 +116,9 @@ This module helps you to translate **large adventure modules** or long texts in 
 4.  **AI Magic:** Paste the prompt into Gemini/ChatGPT and copy the **entire response**.
 5.  **Update:** Click **"Paste"** in Foundry and then **Update Journal**.
 
+4.  **AI Magic:** Paste the prompt into Gemini/ChatGPT and copy the **entire response**.
+5.  **Update:** Click **"Paste"** in Foundry and then **Update Journal**.
+
 ---
 
 ## 👨‍💻 Author
@@ -123,5 +137,4 @@ This module is licensed under the [GPL-3.0 License](LICENSE).
     </a>
     <p>Made with ❤️ for the Foundry VTT Community</p>
 </div>
-
 

@@ -48,6 +48,6 @@
             "path": "languages/de.json"
         }
     ],
-    "license": "",
-    "readme": ""
+    "license": "LICENSE",
+    "readme": "README.md"
 }

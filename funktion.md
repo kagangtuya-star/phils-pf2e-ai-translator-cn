@@ -42,6 +42,14 @@ Wenn du ein Journal namens **"AI Glossary"** (oder "AI Glossar") anlegst, wird d
 * Du willst, dass *"Goblin"* als *"Knöchelkauer"* übersetzt wird? Schreib es rein.
 * Das Modul schaut zuerst hier nach. Dein Wort ist Gottes Wort. Die offizielle Übersetzung kann einpacken.
 
+### 3. Der Autopilot (Weil wir faul sind)
+Hand aufs Herz: Niemand pflegt gerne Glossare. Das wäre Buchhaltung, kein Rollenspiel.
+Deshalb zwingt das Modul die KI, diese Drecksarbeit zu übernehmen.
+*   Bei jeder Übersetzung scannt die KI automatisch nach neuen Eigennamen.
+*   Sie präsentiert dir diese Neuzugänge auf dem Silbertablett.
+*   Ein Klick, und sie landen in deinem **"AI Glossary"**.
+Das Ding wächst also organisch mit. Du musst nicht mal darüber nachdenken. Maximale Faulheit bei maximaler Ordnung.
+
 ---
 
 ## 🛡️ Der Grammatik-Check: Das "Keuschheitsgürtel-Protokoll"
@@ -98,5 +106,4 @@ Weil wir wissen, dass Software von Menschen gemacht wird (und Menschen Fehler ma
 3.  **Paste:** KI machen lassen, Ergebnis zurückwerfen.
 4.  **Bier trinken:** Das Modul prüft, ob die KI Mist gebaut hat, macht ein Backup und speichert dann erst.
 
-Jetzt geh und erschaffe Welten (oder klau sie aus englischen Modulen, ich verpetz dich nicht). 🤖✨
-
+Jetzt geh und erschaffe Welten (oder übersetze sie dir privat, wir haben ja alle den Disclaimer gelesen). 🤖✨
