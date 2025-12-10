@@ -23,6 +23,11 @@ Der Workflow ist ein okkultes Ritual in 6 Schritten:
 5.  **Das Ernten:** Die KI kotzt (hoffentlich) perfekten, formatierten Text aus (JSON). Du kopierst diesen Kauderwelsch.
 6.  **Die Erlösung:** Zurück zu Foundry. Einfügen. Klick auf **"Update"**.
     * *Ergebnis:* BÄM! Dein Journal glänzt wie eine polierte Plattenrüstung.
+7.  **Das "Nervensägen"-Feature (Auto-Next):**
+    * Kaum hast du "Update" geklickt, schreit dich das Modul an: *"Hey, du bist noch nicht fertig! Da sind noch 50 Seiten!"*
+    * Es öffnet automatisch das nächste Fenster.
+    * Und das Beste: Es merkt sich, was du tust. Wenn du gerade **Grammatik** prüfst, öffnet es die nächste ungeprüfte Seite im **Grammatik-Modus**.
+    * Es ist wie ein Quest-Marker, den man nicht abschalten kann. Aber hey, so wirst du wenigstens fertig.
 
 ---
 
@@ -107,4 +112,3 @@ Weil wir wissen, dass Software von Menschen gemacht wird (und Menschen Fehler ma
 4.  **Bier trinken:** Das Modul prüft, ob die KI Mist gebaut hat, macht ein Backup und speichert dann erst.
 
 Jetzt geh und erschaffe Welten (oder übersetze sie dir privat, wir haben ja alle den Disclaimer gelesen). 🤖✨
-
