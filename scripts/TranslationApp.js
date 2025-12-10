@@ -462,106 +462,94 @@ function checkNextBatch(doc, processingMode = 'translate') {
     }, 1000); // Wait 1s for updates to propagate
 }
 
-function showConflictDialog(doc, jsonText, conflicts, processingMode = 'translate') {
-    let itemsHtml = "<ul style='padding-left:0; list-style:none;'>";
-    conflicts.forEach(c => {
-        itemsHtml += `
-        <li style="margin-bottom:10px; padding:5px; background:#ddd; border-radius:3px; border:1px solid #ccc;">
-            <div style="font-weight:bold; color:#d00; margin-bottom:5px;">${loc('LabelConflictChanged') || "Term Changed/Missing:"}</div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="flex:1; margin-right:10px;">
-                    <div style="text-decoration:line-through; color:#777; font-weight:bold;">${c.original}</div>
-                    <div style="color:#007700; font-weight:bold; margin-bottom:5px;">${c.current}</div>
-                    
-                    ${c.originalContext ? `<div style="font-size:0.85em; color:#555; background:#eee; padding:2px; margin-top:2px;">Original Context: <i>"${c.originalContext}"</i></div>` : ""}
-                    ${c.newContext && c.current !== "[GELÖSCHT / FEHLT]" ? `<div style="font-size:0.85em; color:#555; background:#eee; padding:2px; margin-top:2px;">New Context: <i>"${c.newContext}"</i></div>` : ""}
-                </div>
-                <div style="text-align:right; min-width:80px;">
-                     <label style="font-size:0.9em; cursor:pointer;">
-                        <input type="checkbox" class="conflict-choice" data-id="${c.id}" data-original="${c.original}" data-current="${c.current}">
-                        ${loc('LabelKeepNew') || "Keep New"}
-                     </label>
-                </div>
+async function showConflictDialog(doc, jsonText, conflicts, processingMode = 'translate') {
+    return new Promise(resolve => {
+        let itemsHtml = "<ul style='padding-left:0; list-style:none;'>";
+        conflicts.forEach(c => {
+            itemsHtml += `
+        <li style="margin-bottom:10px; padding:10px; background:#f0f0f0; border:1px solid #ccc; border-radius:5px;">
+            <div style="font-weight:bold; color:#d00; margin-bottom:5px; border-bottom:1px solid #ddd; padding-bottom:3px;">
+                ${loc('LabelConflictChanged') || "Term Changed/Missing:"}
+            </div>
+            
+            <div style="margin-bottom:8px;">
+                ${c.originalContext ? `<div style="font-family:inherit; font-size:0.9em; line-height:1.4; color:#333; background:#fff; padding:6px; border:1px solid #ccc; border-radius:3px; margin-bottom:5px;"><b>${loc('LabelOriginalContext') || "Original:"}</b><br><i>"${c.originalContext}"</i></div>` : ""}
+                ${c.newContext ? `<div style="font-family:inherit; font-size:0.9em; line-height:1.4; color:#333; background:#fff; padding:6px; border:1px solid #ccc; border-radius:3px; margin-bottom:5px; border-left: 4px solid #d00;"><b>${loc('LabelNewContext') || "New (Est.):"}</b><br><i>"${c.newContext}"</i></div>` : ""}
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:15px; align-items:center; background:#ddd; padding:5px; border-radius:3px;">
+                <label style="cursor:pointer; font-size:0.9em; display:flex; align-items:center;">
+                    <input type="radio" name="conflict_${c.id}" value="restore" checked style="margin-right:5px;">
+                    <span>${loc('RadioRestore', { term: c.original }) || `Restore: <b>${c.original}</b>`}</span>
+                </label>
+                <label style="cursor:pointer; font-size:0.9em; display:flex; align-items:center;">
+                    <input type="radio" name="conflict_${c.id}" value="keep" style="margin-right:5px;">
+                    <span>${loc('RadioKeep', { term: c.current }) || `Keep New: <b>${c.current}</b>`}</span>
+                </label>
             </div>
         </li>`;
-    });
-    itemsHtml += "</ul>";
 
-    new Dialog({
-        title: loc('TitleConflict') || "Glossary Conflicts Detected",
-        content: `
-        <div class="ai-assistant-content">
-            <p>${loc('TextConflictExplanation') || "The AI changed some protected glossary terms. Please choose:"}</p>
-            <div style="max-height: 300px; overflow-y: auto; background: #eee; padding: 5px; color: #333;">
-                ${itemsHtml}
-            </div>
-            <p style="font-size:0.8em; color:#555;">${loc('HintCheckToKeep') || "Check 'Keep New' to accept the AI change."}</p>
-        </div>`,
-        buttons: {
-            apply: {
-                label: loc('BtnApplyResolution') || "Apply Resolution",
-                icon: '<i class="fas fa-check"></i>',
-                callback: async (html) => {
-                    let resolvedText = jsonText;
+        });
+        itemsHtml += "</ul>";
 
-                    // Iterate over all conflicts and resolve in text
-                    html.find('.conflict-choice').each((i, el) => {
-                        const id = $(el).data('id');
-                        const original = $(el).data('original');
-                        const current = $(el).data('current');
-                        const keepNew = $(el).is(':checked');
+        const content = `
+    <div style="padding:10px;">
+        <p>${loc('DescConflict') || "The AI changed protected glossary terms. Please decide:"}</p>
+        <div style="border:1px solid #999; padding:5px; background:#fff;">
+            ${itemsHtml}
+        </div>
+        <p style="margin-top:10px; font-style:italic; font-size:0.9em;">
+             ${loc('DescConflictHint') || "Select 'Restore' to revert to the Glossary term, or 'Keep New' to accept the AI's change."}
+        </p>
+    </div>
+    `;
 
-                        // Regex to match this specific ID block: [[#ID:Current]]
-                        // We must escape ID because it has #
-                        // actually ID is just #1, #2...
-                        // RegExp need escaping for [ ]
-                        // The text contains [[#1:Brandkugel]]
-
-                        // We want to replace it globally if it appears multiple times? 
-                        // Actually injectGlossaryMarkers makes unique IDs for EVERY occurrence. #1, #2...
-                        // So each conflict is unique to one spot in the text.
-
-                        const searchPattern = `\\[\\[${id}:${current.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]\\]`;
-                        const regex = new RegExp(searchPattern, "g");
-
-                        if (keepNew) {
-                            // Keep New: Replace [[#1:Brandkugel]] with Brandkugel
-                            resolvedText = resolvedText.replace(regex, current);
-                        } else {
-                            // Restore Original: Replace [[#1:Brandkugel]] with Feuerball
-                            resolvedText = resolvedText.replace(regex, original);
-                        }
-                    });
-
-                    // Final cleanup of any remaining markers (just in case)
-                    // processed by processUpdate anyway but let's be clean
-                    // Actually, if we remove markers here, processUpdate receives clean text.
-                    // It won't find conflicts -> success.
-
-                    const result = await processUpdate(doc, resolvedText, processingMode);
-
-                    // Handle result (same as in showResultDialog)
-                    if (typeof result === 'string') {
-                        showResultDialog(doc, resolvedText, result, false, false, false, processingMode);
-                    } else if (result === true || result.success) {
-                        checkNextBatch(doc, processingMode);
+        const d = new Dialog({
+            title: loc('TitleConflict') || "Glossary Conflicts Detected",
+            content: content,
+            buttons: {
+                apply: {
+                    icon: '<i class="fas fa-check"></i>',
+                    label: loc('BtnApplyResolution') || "Apply Selection",
+                    callback: (html) => {
+                        _onConflictSave(html, conflicts, resolve);
                     }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: loc('BtnCancel') || "Cancel",
+                    callback: () => resolve({ action: 'cancel' })
                 }
             },
-            cancel: {
-                label: loc('BtnCancel') || "Cancel",
-                icon: '<i class="fas fa-times"></i>'
-            }
-        },
-        default: "apply"
-    }).render(true);
+            default: "apply",
+            close: () => resolve({ action: 'cancel' })
+        });
+        d.render(true);
+    });
+}
+
+function _onConflictSave(html, conflicts, resolve) {
+    const resolutions = {};
+    const conflictInputs = html.find('input[type="radio"]:checked');
+
+    conflictInputs.each((index, el) => {
+        const name = el.name; // conflict_#123
+        const id = name.replace("conflict_", "");
+        const value = el.value; // 'restore' or 'keep'
+
+        // Find the conflict object to get the text values
+        const conflict = conflicts.find(c => c.id === id);
+
+        if (value === 'keep') {
+            resolutions[id] = 'keep';
+        } else {
+            resolutions[id] = conflict.original;
+        }
+    });
+
+    resolve({ action: 'apply', resolutions: resolutions });
 }
 function showGlossaryUpdateDialog(newItems, doc, processingMode = 'translate') {
-    let itemsHtml = "<ul>";
-    newItems.forEach(item => {
-        itemsHtml += `<li><b>${item.original}</b> = ${item.translation}</li>`;
-    });
-    itemsHtml += "</ul>";
 
     new Dialog({
         title: loc('TitleUpdateGlossary') || "Update AI Glossary",

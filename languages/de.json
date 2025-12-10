@@ -57,12 +57,17 @@
             "WarnGlossaryNoText": "AI Glossary hat keine Text-Seite.",
             "InfoTermsAdded": "{count} neue Begriffe zum AI Glossary hinzugefügt.",
             "InfoNoNewTerms": "Keine neuen Begriffe zum Hinzufügen gefunden.",
-            "LabelConflictChanged": "Begriff geändert:",
+            "LabelConflictChanged": "⚠ Begriff geändert / Gelöscht:",
             "LabelKeepNew": "Neu behalten",
-            "TitleConflict": "Glossar Konflikte erkannt",
-            "TextConflictExplanation": "Die KI hat geschützte Glossar-Begriffe verändert. Bitte wähle:",
-            "HintCheckToKeep": "Haken setzen, um die Änderung der KI zu übernehmen. (Standard: Original wiederherstellen)",
-            "BtnApplyResolution": "Auswahl anwenden"
+            "TitleConflict": "Glossar Konflikte (Schutzfunktion)",
+            "DescConflict": "Die KI hat geschützte Glossar-Begriffe verändert oder gelöscht. Bitte überprüfe die Änderung:",
+            "DescConflictHint": "Wähle 'Wiederherstellen', um den Glossar-Begriff zu erzwingen, oder 'Neu behalten' wenn der KI-Vorschlag besser ist.",
+            "BtnApplyResolution": "Auswahl anwenden",
+            "RadioRestore": "Wiederherstellen: <b>{term}</b>",
+            "RadioKeep": "Neu behalten: <b>{term}</b>",
+            "LabelOriginalContext": "Original:",
+            "LabelNewContext": "Neu (Geschätzt):",
+            "TextContextLost": "(Kontext verloren - Begriff gelöscht)"
         },
         "Prompts": {
             "GrammarCheck": [

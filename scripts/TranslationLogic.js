@@ -1,4 +1,5 @@
 export const MODULE_ID = 'phils-pf2e-ai-translator';
+console.log("!!! PHILS TRANSLATOR LOGIC LOADED v4.4 - SCOPE AWARENESS !!!");
 import { DictionaryLoader } from "./DictionaryLoader.js";
 import { TermReplacer } from "./TermReplacer.js";
 
@@ -73,14 +74,8 @@ export async function injectGlossaryMarkers(docData) {
     }
 
     // 2. Prepare Terms for Regex (sort by length desc)
-    // IMPORTANT: For Grammar Check, we are scanning GERMAN text. 
-    // The dictionary is En -> De. So we need to protect the VALUES (German terms).
-    // Also include Keys if they might appear? Usually not. Stick to Values.
     const allGermanTerms = Object.values(dictionary);
-    // Unique them (some English terms map to same German term)
-    const uniqueTerms = [...new Set(allGermanTerms)].filter(t => t && t.length > 2); // Filter short garbage
-
-    // Sort longest first to match compound words correctly
+    const uniqueTerms = [...new Set(allGermanTerms)].filter(t => t && t.length > 2);
     const terms = uniqueTerms.sort((a, b) => b.length - a.length);
 
     if (terms.length === 0) return docData;
@@ -92,32 +87,39 @@ export async function injectGlossaryMarkers(docData) {
     const regexPattern = `\\b(${escapedTerms.join("|")})\\b`;
     const regex = new RegExp(regexPattern, "g");
 
-    const processString = (text) => {
+    const processString = (text, scopeId) => {
         if (!text) return text;
-        // Split by HTML tags to avoid replacing inside tags
         const parts = text.split(/(<[^>]*>)/g);
         return parts.map(part => {
             if (part.startsWith("<")) return part;
             return part.replace(regex, (match) => {
                 termCounter++;
                 const id = `#${termCounter}`;
-                GLOSSARY_MAP.set(id, match); // Store original
+                // Store Term AND Scope ID (v4.4 Scope Awareness)
+                GLOSSARY_MAP.set(id, { term: match, scopeId: scopeId });
                 return `[[${id}:${match}]]`;
             });
         }).join("");
     };
 
-    // Recursive helper
-    const injectInObject = (obj) => {
+    // Recursive helper with Scope Tracking
+    const injectInObject = (obj, currentScopeId = "root") => {
+        // Track Scope ID if we encounter an object with an ID (e.g. Page, Item)
+        // We only care about explicit IDs that likely define a "Block" of content.
+        let newScopeId = currentScopeId;
+        if (typeof obj === 'object' && obj !== null && obj._id) {
+            newScopeId = obj._id;
+        }
+
         if (typeof obj === 'string') {
-            return processString(obj);
+            return processString(obj, newScopeId);
         } else if (Array.isArray(obj)) {
-            return obj.map(item => injectInObject(item));
+            return obj.map(item => injectInObject(item, newScopeId));
         } else if (typeof obj === 'object' && obj !== null) {
             for (const key in obj) {
                 // Skip _id and other sensitive fields
                 if (key === "_id") continue;
-                obj[key] = injectInObject(obj[key]);
+                obj[key] = injectInObject(obj[key], newScopeId);
             }
             return obj;
         }
@@ -269,7 +271,6 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
     }
 
     try {
-        // Handle New Glossary Creation (from TranslateAndCreateGlossary)
         // Handle New Glossary Creation OR Update
         if (glossaryJournalJson) {
             const existing = game.journal.find(j => j.name === "AI Glossary" || j.name === "AI Glossar");
@@ -314,24 +315,44 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
             delete jsonData._id;
 
             // --- CLEANUP START ---
-            // --- CLEANUP START ---
             // 1. Check for Glossary Conflicts (Grammar Check Protection) & MISSING Terms
 
-            // Helpers for Context Extraction
-            const extractContext = (obj, id) => {
+            // Helper: Find index of an ID in the JSON string using robust Regex
+            // Matches: [[#123:, [[ # 123 :, [[ 123 :, etc.
+            const findIdIndex = (jsonStr, id) => {
+                // id is "#123". Remove # for the raw number.
+                const rawNum = id.replace("#", "");
+                // Regex: [[ + whitespace + optional # + whitespace + number + whitespace + :
+                const pattern = `\\[\\[\\s*#?\\s*${rawNum}\\s*:`;
+                const regex = new RegExp(pattern);
+                const match = jsonStr.match(regex);
+                return match ? { index: match.index, length: match[0].length } : null;
+            };
+
+            // Helpers for Context Extraction and Cleaning
+            const extractCleanContext = (obj, searchPattern, targetId) => {
                 let context = null;
                 const findContext = (o) => {
                     if (context) return;
                     if (typeof o === 'string') {
-                        if (o.includes(id)) {
-                            // Found the string containing the ID. Extract sentence.
-                            // Split by sentence delimiters.
-                            // We need to match the specific occurrence.
-                            // Simple approach: Take approx 100 chars around it.
-                            const index = o.indexOf(id);
-                            const start = Math.max(0, index - 60);
-                            const end = Math.min(o.length, index + id.length + 60);
-                            context = "..." + o.substring(start, end).trim() + "...";
+                        if (o.includes(searchPattern)) {
+                            const index = o.indexOf(searchPattern);
+                            // Grab a generous chunk
+                            const start = Math.max(0, index - 80);
+                            const end = Math.min(o.length, index + searchPattern.length + 80);
+                            let rawSnippet = "..." + o.substring(start, end).trim() + "...";
+
+                            // Extract Term from searchPattern: [[#ID:Term]]
+                            const termMatch = searchPattern.match(/\[\[#.*?:(.*?)\]\]/);
+                            const term = termMatch ? termMatch[1] : "???";
+
+                            // Replace specific target strict
+                            rawSnippet = rawSnippet.replace(searchPattern, `<b style="color:#d00; text-decoration:underline;">${term}</b>`);
+
+                            // 2. Clean ALL other markers: [[#ID:Content]] -> Content
+                            rawSnippet = rawSnippet.replace(/\[\[#.*?:(.*?)\]\]/g, "$1");
+
+                            context = rawSnippet;
                         }
                     } else if (Array.isArray(o)) {
                         o.forEach(i => findContext(i));
@@ -343,43 +364,129 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
                 return context;
             };
 
-            // To get ORIGINAL Context, we need the original text with markers.
-            // We can regenerate it by running injectGlossaryMarkers on the doc again.
-            // But we must be careful not to pollute GLOSSARY_MAP again or we rely on the fact that it's deterministic.
-            // Actually, we can use a temporary map or just re-run it and assume same IDs if deterministic.
-            // Our termCounter depends on order. It IS deterministic if dictionary is same.
+            // Helper: Recover context via Deterministic Neighbor Interpolation (v4.3 - Robust Regex)
+            const recoverContext = (targetId, jsonData, referenceData) => {
+                try {
+                    const jsonString = JSON.stringify(jsonData);
+                    const refString = JSON.stringify(referenceData);
 
-            // Let's create a "Reference Doc" with markers.
-            // IMPORTANT: We need clean data first (English/Original), then inject markers.
-            // BUT wait, doc is the source. getCleanData(doc) gets current state.
-            // If we utilize getCleanData(doc) + injectGlossaryMarkers, we get the text with [[#1:Term]].
-            // We can use this object to find "Original Context".
+                    const extractIdOrder = (str) => {
+                        const matches = [...str.matchAll(/\[\[#(.*?):/g)];
+                        return matches.map(m => `#${m[1]}`);
+                    };
+
+                    const refIds = extractIdOrder(refString);
+                    const targetIndex = refIds.indexOf(targetId);
+
+                    if (targetIndex === -1) return "(ID not found in Reference)";
+
+                    // 2. Find Nearest Preceding Anchor
+                    let startIndex = 0;
+                    let startMarker = "[Start]";
+
+                    for (let i = targetIndex - 1; i >= 0; i--) {
+                        const pid = refIds[i];
+                        const match = findIdIndex(jsonString, pid);
+                        if (match) {
+                            startIndex = match.index + match.length;
+                            startMarker = pid;
+                            break;
+                        }
+                    }
+
+                    // 3. Find Nearest Succeeding Anchor
+                    let endIndex = jsonString.length;
+                    let endMarker = "[End]";
+
+                    for (let i = targetIndex + 1; i < refIds.length; i++) {
+                        const nid = refIds[i];
+                        const match = findIdIndex(jsonString, nid);
+                        if (match) {
+                            endIndex = match.index;
+                            endMarker = nid;
+                            break;
+                        }
+                    }
+
+                    // 4. Extract Gap
+                    if (startIndex >= endIndex) return "(Gap collapsed)";
+
+                    let rawGap = jsonString.substring(startIndex, endIndex);
+
+                    // 5. Cleanup
+                    if (startMarker !== "[Start]") {
+                        const closingBracket = rawGap.indexOf("]]");
+                        if (closingBracket !== -1 && closingBracket < 100) {
+                            rawGap = rawGap.substring(closingBracket + 2);
+                        }
+                    }
+
+                    let cleanGap = rawGap.replace(/\\"/g, '"')
+                        .replace(/^[^\wäöüÄÖÜß]+/, "")
+                        .replace(/[^\wäöüÄÖÜß]+$/, "");
+
+                    if (cleanGap.length < 3) return "[GELÖSCHT]";
+
+                    if (cleanGap.length > 250) cleanGap = cleanGap.substring(0, 250) + "...";
+
+                    console.log(`[Phils Translator v4.3] Gap Found between ${startMarker} and ${endMarker}`);
+                    return `[... ${cleanGap} ...] (Zwischen ${startMarker} & ${endMarker})`;
+
+                } catch (e) {
+                    console.error("Context Recovery Error:", e);
+                    return "(Recovery Error)";
+                }
+            };
+
+
+            // To get ORIGINAL Context, we need the original text with markers.
+            // This is where GLOSSARY_MAP is populated.
             const referenceData = await injectGlossaryMarkers(getCleanData(doc, true));
 
+            // IDENTIFY UPDATED SCOPES (v4.4)
+            // We scan jsonData to see which IDs (Pages/Items) are present.
+            // Any term belonging to a Scope ID NOT in this list will be ignored.
+            const updatedScopes = new Set();
+            updatedScopes.add("root"); // Always include root (document level fields)
+
+            const collectScopes = (obj) => {
+                if (typeof obj === 'object' && obj !== null) {
+                    if (obj._id) updatedScopes.add(obj._id);
+                    if (Array.isArray(obj)) obj.forEach(collectScopes);
+                    else Object.values(obj).forEach(collectScopes);
+                }
+            };
+            collectScopes(jsonData);
+            console.log("Phils Translator | Updated Scopes identified:", updatedScopes);
 
             const conflicts = [];
 
             // Check for MODIFIED Terms
             const scanConflicts = (obj) => {
                 if (typeof obj === 'string') {
-                    const matches = [...obj.matchAll(/\[\[#(.*?):(.*?)\]\]/g)];
+                    // v4.5 Fix: Robust Regex for Conflict Detection
+                    // Matches: [[ # 123 : Term ]] (tolerant to spaces)
+                    const matches = [...obj.matchAll(/\[\[\s*#?(\d+)\s*:\s*(.*?)\s*\]\]/g)];
                     for (const match of matches) {
-                        const id = `#${match[1]}`;
-                        const returnedTerm = match[2];
-                        const originalTerm = GLOSSARY_MAP.get(id);
+                        const id = `#${match[1]}`; // Reconstruct ID (e.g. #123)
+                        const returnedTerm = match[2]; // Content
+                        const entry = GLOSSARY_MAP.get(id); // Returns Object {term, scopeId}
 
-                        if (originalTerm && returnedTerm !== originalTerm) {
-                            // Context Extraction
-                            const originalContext = extractContext(referenceData, `[[${id}:${originalTerm}]]`);
-                            const newContext = extractContext(jsonData, `[[${id}:${returnedTerm}]]`);
+                        if (entry) {
+                            const originalTerm = entry.term;
 
-                            conflicts.push({
-                                id: id,
-                                original: originalTerm,
-                                current: returnedTerm,
-                                originalContext: originalContext || "(Context not found)",
-                                newContext: newContext || "(Context not found)"
-                            });
+                            if (originalTerm && returnedTerm !== originalTerm) {
+                                const originalContext = extractCleanContext(referenceData, `[[${id}:${originalTerm}]]`, id);
+                                const newContext = extractCleanContext(jsonData, `[[${id}:${returnedTerm}]]`, id);
+
+                                conflicts.push({
+                                    id: id,
+                                    original: originalTerm,
+                                    current: returnedTerm,
+                                    originalContext: originalContext || "(Context not found)",
+                                    newContext: newContext || "(Context not found)"
+                                });
+                            }
                         }
                     }
                 } else if (Array.isArray(obj)) {
@@ -390,26 +497,34 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
             };
             scanConflicts(jsonData);
 
-            // Check for MISSING Terms (The 'Deleted' Case)
-            // Iterate over all keys in GLOSSARY_MAP and check if they exist in jsonData
+            // Check for MISSING Terms
             const allIds = Array.from(GLOSSARY_MAP.keys());
-            // We need a helper to check existence efficiently? JSON stringify check is fast enough for IDs.
             const jsonString = JSON.stringify(jsonData);
 
             for (const id of allIds) {
-                // Check if ID is present (e.g. #54)
-                // Note: ID could be part of another string, but with [[#ID: it's specific.
-                // We check for `[[${id}:`
-                if (!jsonString.includes(`[[${id}:`)) {
-                    const originalTerm = GLOSSARY_MAP.get(id);
-                    const originalContext = extractContext(referenceData, `[[${id}:${originalTerm}]]`);
+                const entry = GLOSSARY_MAP.get(id);
+                // 1. SCOPE CHECK: Is this term's scope even being updated?
+                // If scopeId is undefined (legacy), we default to checked.
+                if (entry && entry.scopeId && !updatedScopes.has(entry.scopeId)) {
+                    // This term belongs to a page/item NOT present in the update JSON.
+                    // Ignore it silently.
+                    continue;
+                }
+
+                // 2. EXISTENCE CHECK (v4.3 Regex)
+                const match = findIdIndex(jsonString, id);
+
+                if (!match) {
+                    const originalTerm = entry ? entry.term : "Unknown";
+                    const originalContext = extractCleanContext(referenceData, `[[${id}:${originalTerm}]]`, id);
+                    const recoveredContext = recoverContext(id, jsonData, referenceData);
 
                     conflicts.push({
                         id: id,
                         original: originalTerm,
                         current: "[GELÖSCHT / FEHLT]",
                         originalContext: originalContext || "(Context not found)",
-                        newContext: "(Term deleted by AI)"
+                        newContext: recoveredContext || "(Context lost - Term deleted)"
                     });
                 }
             }

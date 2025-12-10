@@ -57,12 +57,17 @@
             "WarnGlossaryNoText": "AI Glossary has no text page.",
             "InfoTermsAdded": "Added {count} new terms to AI Glossary.",
             "InfoNoNewTerms": "No new unique terms to add.",
-            "LabelConflictChanged": "Term Changed:",
+            "LabelConflictChanged": "⚠ Term Changed / Deleted:",
             "LabelKeepNew": "Keep New",
-            "TitleConflict": "Glossary Conflicts Detected",
-            "TextConflictExplanation": "The AI changed some protected glossary terms. Please choose how to proceed:",
-            "HintCheckToKeep": "Check 'Keep New' to accept the AI change. (Default: Restore Original)",
-            "BtnApplyResolution": "Apply Resolution"
+            "TitleConflict": "Glossary Conflicts (Safety)",
+            "DescConflict": "The AI modified or deleted protected glossary terms. Please review:",
+            "DescConflictHint": "Select 'Restore' to enforce the Glossary term, or 'Keep New' if the AI's change is better.",
+            "BtnApplyResolution": "Apply Selection",
+            "RadioRestore": "Restore: <b>{term}</b>",
+            "RadioKeep": "Keep New: <b>{term}</b>",
+            "LabelOriginalContext": "Original:",
+            "LabelNewContext": "New (Est.):",
+            "TextContextLost": "(Context lost - Term deleted)"
         },
         "Prompts": {
             "GrammarCheck": [

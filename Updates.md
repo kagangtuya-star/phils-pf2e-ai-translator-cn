@@ -1,24 +1,25 @@
-# Changelog
+## v1.2.3 - Stabilität & "Smart Check" Update
+*   **Intelligente Scope-Erkennung:** Das Modul prüft nun intelligent, *welche* Seiten/Items in der KI-Antwort tatsächlich aktualisiert wurden. Dies eliminiert falsche Warnungen über "Fehlende Begriffe", wenn du nur einen Teil eines Dokuments übersetzt (Partial Prompting).
+*   **Robuste Kontext-Wiederherstellung (v4.5):** 
+    *   Komplett neu geschriebene Logik zum Finden von "Lücken" (Deterministische Nachbar-Interpolation).
+    *   Findet nun zuverlässig den Kontext fehlender Begriffe, selbst wenn die KI die Formatierung oder Leerzeichen der Marker ändert (z.B. `[[ # 123 : ... ]]`).
+    *   Tolerante Konflikterkennung (Whitespace) dient als Sicherheitsnetz gegen versehentliches Übersehen von geänderten Begriffen.
+*   **Lokalisierte Konflikt-UI:** Der Dialog für Glossar-Konflikte ist nun vollständig lokalisiert (deutsche Buttons/Labels).
+*   **Fix:** Probleme behoben, bei denen "Geister-Begriffe" von anderen Seiten bei Teil-Updates Fehlalarme auslösten.
 
-## v1.2.3 (December 10, 2025)
-*   **Missing Term Detection**: The module now detects if the AI completely deletes a protected glossary term (e.g. replacing `#54:Bewegungsrate` with `Geschwindigkeit` without the tag). It flags this as `[GELÖSCHT / FEHLT]`.
-*   **Context-Aware Conflict Dialog**: When a conflict occurs (Changed or Missing term), the dialog now shows the **Original Sentence** (Context) where the term appeared. This helps you decide whether to accept the AI's change or restore the original.
-*   **Logic**: Improved `processUpdate` to re-simulate the original state for accurate context extraction.
+## v1.2.2 - Smarte KI-Workflow Optimierung
+*   **Smart Auto-Next-Batch**: Das Modul merkt sich nun, ob du im "Übersetzungs-Modus" oder "Grammatik-Check-Modus" bist.
+*   **Workflow-Optimierung**: Nach Abschluss eines Batches wird automatisch der nächste *relevante* Batch geöffnet (z.B. findet es beim Grammatik-Check die nächste Seite, die noch nicht geprüft wurde).
+*   **Status-Tracking**: Verbessertes internes Tracking für `aiGrammarChecked` vs `aiProcessed`.
+*   **Lokalisierung**: Nachrichten für das spezifische neue Auto-Next-Verhalten hinzugefügt.
 
-## v1.2.2 (December 10, 2025)
-*   **Smart Auto-Next-Batch**: The module now remembers if you are in "Translation Mode" or "Grammar Check Mode".
-*   **Workflow Optimization**: After finishing a batch, it automatically opens the next *relevant* batch (e.g., if you are grammar checking, it finds the next page that hasn't been checked yet).
-*   **Status Tracking**: Improved internal tracking for `aiGrammarChecked` vs `aiProcessed`.
-*   **Localization**: Added messages for the specific new auto-next behavior.
+## v1.2.1 - Visuelles Status Tracking
+*   **Visuelles Tracking für Grammatik-Checks**: Neues Icon (`fa-spell-check`) in der Seitenliste hinzugefügt. Du kannst nun zwischen Seiten unterscheiden, die nur "Übersetzt" (Grüner Haken) sind, und solchen, die "Grammatik-Geprüft" (Blauer Haken) wurden.
+*   **Status-Tracking**: Das Modul unterscheidet nun deutlich zwischen `aiProcessed` (Übersetzung) und `aiGrammarChecked` (Grammatik-Check) Status.
+*   **Rechtliche Updates**: Prominente rechtliche Hinweise zur privaten Nutzung von urheberrechtlich geschützten Übersetzungen hinzugefügt.
+*   **Metadaten-Fixes**: Lizenz- und Readme-Felder in `module.json` korrigiert.
 
-## v1.2.1 (December 10, 2025)
-*   **Visual Tracking for Grammar Checks**: Added a new icon (`fa-spell-check`) to the page list. Now you can distinguish between pages that are just "Translated" (Green Check) and pages that have been "Grammar Checked" (Blue Spell Check).
-*   **Status Tracking**: The module now distinctively tracks `aiProcessed` (Translation) and `aiGrammarChecked` (Grammar Check) states.
-*   **Legal Updates**: Added prominent legal notices regarding private use of copyrighted translations.
-*   **Metadata Fixes**: Corrected `module.json` license and readme fields.
-
-## v1.2.0 Update
-
+## v1.2.0 - Grammar Check Mode & Conflict Protection
 *   **NEU: Grammatik-Check Modus:**
     *   Ein neuer Modus prüft bereits deutsche Texte auf Grammatik, Rechtschreibung und Ausdruck, ohne sie neu zu übersetzen. Ideal für selbstgeschriebene Abenteuer oder DeepL-Vorübersetzungen.
 *   **NEU: Indexed Glossary Protection:**
@@ -32,15 +33,13 @@
 *   **Code Cleanup:**
     *   Der Code wurde entrümpelt und optimiert. Keine "KI-Überreste" mehr in den Logs.
 
-## v1.1.5 Update
-
+## v1.1.5 - UX Polishing & Bugfixes
 *   **BUGFIX: Dialog-Reihenfolge:**
     *   Ein Fehler wurde behoben, bei dem das "Nächster Batch"-Fenster gleichzeitig mit dem "Glossar Update"-Fenster geöffnet wurde. Die Dialoge erscheinen nun korrekt nacheinander.
 *   **BUGFIX: Syntax Error:**
     *   Ein kritischer Syntax-Fehler (`Declaration or statement expected`) wurde behoben, der das Modul unbenutzbar machte.
 
-## v1.1.4 Update
-
+## v1.1.4 - AI Prompt Logic Overhaul
 *   **NEU: Optimierte Prompt-Struktur:**
     *   Die KI-Prompts wurden komplett überarbeitet und in eine klare Struktur (`Role / Input / Security / Logic / Output`) gegliedert. Das sorgt für deutlich stabilere und konsistentere Ergebnisse bei allen KI-Modellen.
 *   **NEU: Verbesserte Glossar-Logik:**
@@ -48,8 +47,7 @@
 *   **NEU: Intelligente Begriffs-Korrektur:**
     *   Die Regel für vorübersetzte Begriffe (`%%Original%%`) wurde verfeinert: Die KI darf diese nun anpassen, wenn es **zwingend** für die Grammatik oder Logik des Satzes notwendig ist. Das verhindert "hölzerne" Übersetzungen.
 
-## v1.1.3 Update
-
+## v1.1.3 - Security & Deep ID Verification
 *   **NEU: Deep ID Check (Sicherheit):**
     *   Das Modul prüft nun **rekursiv jede einzelne ID** in der KI-Antwort gegen das Original-Dokument.
     *   Verhindert, dass die KI versehentlich interne IDs (z.B. von `pdftofoundry`) erfindet oder verändert, was zu Datenverlust führen könnte.
@@ -59,8 +57,7 @@
 *   **NEU: Konsistente Namens-Prompts:**
     *   Die KI wird nun explizit angewiesen, Namen immer zweisprachig (`Deutsch / Englisch`) zu formatieren, wenn ein Glossar verwendet wird.
 
-## v1.1.2 Update
-
+## v1.1.2 - Advanced Automation Features
 *   **NEU: Smarter Backup:**
     *   Das Modul erstellt nun **keine doppelten Backups** mehr. Wenn bereits ein Backup existiert (z.B. "Kapitel 1 (Backup)"), wird dieses behalten und kein neues erstellt. Das verhindert, dass dein Journal-Ordner zugemüllt wird, wenn du Batch-Übersetzungen machst.
     *   Das Backup repräsentiert somit immer den **Originalzustand** vor der allerersten Übersetzung.

@@ -138,8 +138,15 @@ This module helps you to translate **large adventure modules** or long texts in 
 ## 👨‍💻 Author
 * **Phil** (GitHub: [PhilsModules](https://github.com/PhilsModules))
 
+## 🙌 Besonderer Dank / Special Thanks
+
+Ein riesiges Dankeschön und viele Grüße an **Primetide** und **Abaddon3851** für die Prüfung und Freigabe des Moduls!
+
+---
+
 ## 📄 License
 This module is licensed under the [GPL-3.0 License](LICENSE).
+
 
 ---
 <div align="center">
