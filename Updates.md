@@ -1,3 +1,11 @@
+## v1.2.7 - Grammar Scope Logic Fix
+*   **Fix:** The "Grammar Check" functionality now correctly respects the selected page range. It no longer validates the entire journal against the partial AI response, eliminating false "Missing Term" errors for unselected pages.
+*   **Fix:** `selectedPageIds` are now correctly propagated from the initial prompt generation through to the final validation step.
+
+## v1.2.6 - Hotfix Layout
+*   **Fix:** Behoben eines kritischen Layout-Fehlers ("Fenster in Fenster"), bei dem ein schließendes `</div>` Tag fehlte.
+*   **Fix:** HTML-Sanitizer hinzugefügt, um Layout-Bruch durch Sonderzeichen zu verhindern.
+
 ## v1.2.5 - Stability & External Access Fixes
 *   **Fix: Thread-Safe Glossary Check:** Die interne Logik für Glossar-Checks wurde komplett überarbeitet (lokaler State statt globaler Map). Dies behebt die fehlerhafte "Konflikt"-Erkennung, insbesondere bei langsameren Verbindungen oder externem Zugriff.
 *   **Prompt-Hardening (Anti-Halluzination):** Die KI-Prompts (DE/EN) wurden gehärtet. Sie enthalten nun explizite Anweisungen, IDs niemals neu zu nummerieren. Dies verhindert, dass die KI "[[#1:...]]" erfindet, wo vorher "[[#12:...]]" war.

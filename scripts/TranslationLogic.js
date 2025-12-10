@@ -221,7 +221,7 @@ export function getGlossaryContent() {
     return cleanContent.substring(0, 5000);
 }
 
-export async function processUpdate(doc, rawText, processingMode = 'translate') {
+export async function processUpdate(doc, rawText, processingMode = 'translate', selectedPageIds = null) {
     const jsonMatches = [...rawText.matchAll(/```json\s*([\s\S]*?)\s*```/gi)];
     let translationJson = null;
     let newGlossaryItems = null;
@@ -480,7 +480,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate') 
             // To get ORIGINAL Context, we need the original text with markers.
             // This is where glossaryMap is supposed to be populated.
             // v5.0: Now returns object with map
-            const { processedData: referenceData, glossaryMap } = await injectGlossaryMarkers(getCleanData(doc, true));
+            const { processedData: referenceData, glossaryMap } = await injectGlossaryMarkers(getCleanData(doc, true, selectedPageIds));
 
             // IDENTIFY UPDATED SCOPES (v4.4)
             // We scan jsonData to see which IDs (Pages/Items) are present.

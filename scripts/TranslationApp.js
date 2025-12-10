@@ -301,7 +301,7 @@ async function prepareTranslatePrompt(doc, userPrompt, systemName, sendFull, tar
     const finalPrompt = resolvePrompt(promptKey, { systemName, jsonString, userPrompt: userPrompt || defaultPrompt, glossaryContent: "", replacedTermsList: "" });
     const expectGlossaryCreation = (promptKey === "TranslateAndCreateGlossary");
     const expectGlossaryUpdate = (promptKey === "TranslateWithGlossary");
-    copyAndOpen(finalPrompt, doc, true, targetUrl, expectGlossaryCreation, expectGlossaryUpdate, false, 'translate');
+    copyAndOpen(finalPrompt, doc, true, targetUrl, expectGlossaryCreation, expectGlossaryUpdate, false, 'translate', selectedPages);
 }
 
 async function prepareGlossaryGenPrompt(doc, userPrompt, systemName, sendFull, targetUrl, selectedPages = null) {
@@ -315,7 +315,7 @@ async function prepareGlossaryGenPrompt(doc, userPrompt, systemName, sendFull, t
 
     const defaultPrompt = loc('DefaultGlossary') || "Create a list of important terms.";
     const finalPrompt = resolvePrompt("GenerateGlossary", { systemName, docDesc: textContent, userPrompt: userPrompt || defaultPrompt, replacedTermsList: "" });
-    copyAndOpen(finalPrompt, doc, true, targetUrl, false, false, true);
+    copyAndOpen(finalPrompt, doc, true, targetUrl, false, false, true, 'translate', selectedPages);
 }
 
 async function prepareGrammarCheckPrompt(doc, userPrompt, systemName, sendFull, targetUrl, selectedPages = null) {
@@ -331,21 +331,21 @@ async function prepareGrammarCheckPrompt(doc, userPrompt, systemName, sendFull, 
     const defaultPrompt = loc('DefaultGrammarCheck') || "Check grammar and logic.";
     const finalPrompt = resolvePrompt("GrammarCheck", { systemName, jsonString, userPrompt: userPrompt || defaultPrompt });
 
-    // Usage: copyAndOpen(text, doc, isUpdateMode, targetUrl, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode)
-    copyAndOpen(finalPrompt, doc, true, targetUrl, false, false, false, 'grammar');
+    // Usage: copyAndOpen(text, doc, isUpdateMode, targetUrl, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode, selectedPages)
+    copyAndOpen(finalPrompt, doc, true, targetUrl, false, false, false, 'grammar', selectedPages);
 }
 
-async function copyAndOpen(text, doc, isUpdateMode, targetUrl, expectGlossaryCreation = false, expectGlossaryUpdate = false, isGlossaryMode = false, processingMode = 'translate') {
+async function copyAndOpen(text, doc, isUpdateMode, targetUrl, expectGlossaryCreation = false, expectGlossaryUpdate = false, isGlossaryMode = false, processingMode = 'translate', selectedPages = null) {
     if (!text) { ui.notifications.error(loc('ErrorEmptyPrompt') || "Error: Empty Prompt"); return; }
     try {
         await navigator.clipboard.writeText(text);
         ui.notifications.info(loc('PromptCopied') || "Prompt copied to clipboard!");
         window.open(targetUrl, "_blank");
-        if (isUpdateMode) showResultDialog(doc, "", null, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode);
+        if (isUpdateMode) showResultDialog(doc, "", null, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode, selectedPages);
     } catch (err) { ui.notifications.error(loc('ErrorCopyFailed') || "Copy failed"); }
 }
 
-export function showResultDialog(doc, initialContent = "", errorMsg = null, expectGlossaryCreation = false, expectGlossaryUpdate = false, isGlossaryMode = false, processingMode = 'translate') {
+export function showResultDialog(doc, initialContent = "", errorMsg = null, expectGlossaryCreation = false, expectGlossaryUpdate = false, isGlossaryMode = false, processingMode = 'translate', selectedPages = null) {
     let errorHTML = "";
     if (errorMsg) {
         errorHTML = `<div style="color:red; border:1px solid red; padding:5px; margin-bottom:5px;">${errorMsg}</div>`;
@@ -384,7 +384,7 @@ export function showResultDialog(doc, initialContent = "", errorMsg = null, expe
                     if (!isGlossaryMode && (text.includes('"name": "AI Glossary"') || text.includes('"name": "AI Glossar"'))) {
                         const errorText = loc('ErrorGlossaryInTranslation') || "Error: It looks like you pasted the Glossary JSON here. Please paste ONLY the Translation JSON.";
                         ui.notifications.error(errorText);
-                        showResultDialog(doc, text, errorText, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode);
+                        showResultDialog(doc, text, errorText, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode, selectedPages);
                         return;
                     }
 
@@ -392,14 +392,14 @@ export function showResultDialog(doc, initialContent = "", errorMsg = null, expe
                     if (isGlossaryMode && !(text.includes('"name": "AI Glossary"') || text.includes('"name": "AI Glossar"'))) {
                         const errorText = loc('ErrorInvalidGlossaryJson') || "Error: This does not look like the Glossary JSON. Please paste the Glossary JSON block.";
                         ui.notifications.error(errorText);
-                        showResultDialog(doc, text, errorText, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode);
+                        showResultDialog(doc, text, errorText, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode, selectedPages);
                         return;
                     }
 
-                    const result = await processUpdate(doc, text, processingMode);
+                    const result = await processUpdate(doc, text, processingMode, selectedPages);
 
                     if (typeof result === 'string') {
-                        showResultDialog(doc, text, result, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode);
+                        showResultDialog(doc, text, result, expectGlossaryCreation, expectGlossaryUpdate, isGlossaryMode, processingMode, selectedPages);
                     } else if (result && result.status === 'conflict') {
                         showConflictDialog(doc, text, result.conflicts, processingMode);
                     } else if (result === true || result.success) {
