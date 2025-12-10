@@ -1,6 +1,10 @@
-## v1.2.7 - Grammar Scope Logic Fix
-*   **Fix:** The "Grammar Check" functionality now correctly respects the selected page range. It no longer validates the entire journal against the partial AI response, eliminating false "Missing Term" errors for unselected pages.
-*   **Fix:** `selectedPageIds` are now correctly propagated from the initial prompt generation through to the final validation step.
+## v1.2.7 - Grammatik-Scope Logik Fix
+*   **Fix:** Die "Grammatik-Prüfung" respektiert nun korrekt den ausgewählten Seitenbereich. Sie validiert nicht mehr das gesamte Journal gegen die Teil-Antwort der KI, was falsche Warnungen über "Fehlende Begriffe" auf nicht ausgewählten Seiten eliminiert.
+*   **Fix:** `selectedPageIds` werden nun korrekt von der Prompt-Erstellung bis zur Validierung durchgereicht.
+
+## v1.2.6 - Hotfix Layout
+*   **Fix:** Behoben eines kritischen Layout-Fehlers ("Fenster in Fenster"), bei dem ein schließendes `</div>` Tag fehlte.
+*   **Fix:** HTML-Sanitizer hinzugefügt, um Layout-Bruch durch Sonderzeichen zu verhindern.
 
 ## v1.2.6 - Hotfix Layout
 *   **Fix:** Behoben eines kritischen Layout-Fehlers ("Fenster in Fenster"), bei dem ein schließendes `</div>` Tag fehlte.
@@ -91,3 +95,4 @@
     *   Wählt automatisch immer 10 Seiten auf einmal aus, um Context-Limits der KI nicht zu sprengen.
 *   **Multi-Provider Support:**
     *   Bereitet Prompts vor für: **ChatGPT, Claude, Gemini, Copilot, Perplexity**.
+
