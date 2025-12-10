@@ -12,9 +12,18 @@
 <br>
 
 **Der smarte Übersetzungs-Helfer für Foundry VTT – keine API-Kosten, volle Kontrolle.**
+<br>
 *The smart translation helper for Foundry VTT – no API costs, full control.*
 
-[🇩🇪 Deutsche Anleitung](#-deutsche-anleitung) • [🇬🇧 English Instructions](#-english-instructions)
+<br>
+
+<a href="#-deutsche-anleitung">
+  <img src="https://img.shields.io/badge/Start-Deutsche_Anleitung-black?style=for-the-badge&logo=germany&logoColor=red" alt="Deutsche Anleitung">
+</a>
+&nbsp;&nbsp;
+<a href="#-english-instructions">
+  <img src="https://img.shields.io/badge/Start-English_Instructions-black?style=for-the-badge&logo=united-kingdom&logoColor=white" alt="English Instructions">
+</a>
 
 </div>
 
@@ -36,7 +45,7 @@
 
 ---
 
-# 🇩🇪 Deutsche Anleitung
+# <img src="https://flagcdn.com/48x36/de.png" width="28" height="21" alt="DE"> Deutsche Anleitung
 
 **Übersetze deine Foundry VTT Journale kostenlos mit KI.**
 
@@ -63,7 +72,7 @@ Phil's Pf2e Ai Translator verbindet deine Foundry VTT Welt mit der Power moderne
 3.  Klicke auf **Install Module**.
 4.  Füge die folgende **Manifest URL** unten ein:
     ```text
-    https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json
+    [https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json](https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json)
     ```
 5.  Klicke auf **Install**.
 
@@ -85,7 +94,7 @@ Phil's Pf2e Ai Translator verbindet deine Foundry VTT Welt mit der Power moderne
 
 ---
 
-# 🇬🇧 English Instructions
+# <img src="https://flagcdn.com/48x36/gb.png" width="28" height="21" alt="EN"> English Instructions
 
 **Automated Translation of Foundry VTT Journals with AI**
 
@@ -151,4 +160,3 @@ Portions of this module utilize data from the [Pathfinder German Translation mod
     <br><br>
     <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
 </div>
-
