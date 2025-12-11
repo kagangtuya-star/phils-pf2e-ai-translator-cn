@@ -1,3 +1,11 @@
+## v1.3.0 - ApplicationV2, UI Polish & Prompt Refinements
+*   **ApplicationV2 Migration:** Das gesamte Modul wurde auf die moderne Foundry V12+ ApplicationV2 Architektur migriert. Dies sorgt für eine flüssigere UI, besseres Layout-Management und Zukunftssicherheit.
+*   **UI Readability Fix:** Bessere Lesbarkeit im Konflikt-Dialog (dunkle Schrift auf hellem Grund).
+*   **NEU: "Alle neuen übernehmen" Button:** Im Konflikt-Dialog gibt es nun einen "Fast-Forward" Button, um alle KI-Änderungen mit einem Klick zu akzeptieren, statt jeden einzeln auszuwählen.
+*   **Prompt Refinements:**
+    *   **Glossar-Konsistenz:** Die KI wurde angewiesen, strikt das Format `Original = Übersetzung` im Glossar zu nutzen, ohne störende Sprach-Labels wie `(English)`.
+    *   **Kontext-Intelligenz:** Die Prompts wurden verfeinert, um logische Fehler (wie "Schattenwandeln Zwilling" statt "Schattenzwilling") besser zu korrigieren und intelligent mit Compound-Wörtern umzugehen.
+
 ## v1.2.8 - Save-Logic & Conflict Fixes
 *   **Fix: Konflikt-Dialog Async Saving:** Der "Konflikt-Dialog" wartet nun korrekt auf deine Entscheidung, bevor er weitermacht. Zuvor wurde die Eingabe ("Original wiederherstellen" vs. "Neu behalten") unter bestimmten Umständen ignoriert und der original Text ungeprüft gespeichert.
 *   **Verbesserung: Konflikt-Modus:** Die strikte Konflikt-Erkennung (die nach veränderten/fehlenden `[[#ID...]]` Markern sucht) ist nun **nur noch im Grammatik-Modus** aktiv. Bei normalen Übersetzungen, wo sich Text und Satzbau natürlich ändern, führte dies zu unnötigen Fehlalarmen.

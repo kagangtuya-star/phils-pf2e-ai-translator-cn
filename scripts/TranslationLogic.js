@@ -15,7 +15,7 @@ export function formatString(str, data = {}) {
 export const loc = (key, data = {}) => {
     const i18nKey = `PHILS_PF2E_AI_TRANSLATOR.UI.${key}`;
     if (game.i18n.has(i18nKey)) return game.i18n.format(i18nKey, data);
-    return key;
+    return null;
 };
 
 export function resolvePrompt(key, data) {

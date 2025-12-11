@@ -65,6 +65,7 @@
             "BtnApplyResolution": "Apply Selection",
             "RadioRestore": "Restore: <b>{term}</b>",
             "RadioKeep": "Keep New: <b>{term}</b>",
+            "BtnUseAllNew": "Use All New",
             "LabelOriginalContext": "Original:",
             "LabelNewContext": "New (Est.):",
             "TextContextLost": "(Context lost - Term deleted)"
