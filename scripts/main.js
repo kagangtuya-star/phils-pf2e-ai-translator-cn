@@ -28,6 +28,15 @@ Hooks.once('init', () => {
         type: Number,
         default: 10
     });
+
+    game.settings.register(MODULE_ID, 'maxPromptLength', {
+        name: game.i18n.localize("PHILS_PF2E_AI_TRANSLATOR.UI.Settings.MaxPromptLength.Name"),
+        hint: game.i18n.localize("PHILS_PF2E_AI_TRANSLATOR.UI.Settings.MaxPromptLength.Hint"),
+        scope: 'client',
+        config: true,
+        type: Number,
+        default: 100000
+    });
 });
 
 Hooks.on('renderJournalDirectory', async (app, html) => {

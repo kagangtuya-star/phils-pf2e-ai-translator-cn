@@ -1,7 +1,13 @@
+## v1.3.1 - Usability & Documentation
+*   **Documentation:** Eine umfangreiche, deutsche Anleitung (`anleitung.md`) ist nun direkt im Modul enthalten und über die `README.md` verlinkt.
+*   **Prompt-Marker:** Prompts und Antworten werden nun mit klaren Markern (`[ANFANG_DER_ANFRAGE]`, `[ENDE_DER_ANFRAGE]`) versehen, um das Kopieren sicherer zu machen.
+*   **Prompt-Längen-Warnung:** Du kannst nun eine Warnschwelle für die Prompt-Länge einstellen (Standard: 100k Zeichen), um Probleme mit dem Kontext-Fenster der KI zu vermeiden.
+*   **Fehlerbehebung:** Verbesserte Fehlermeldungen bei unvollständigen KI-Antworten (fehlende `[ENDE_DER_ANTWORT]` Marker) und falschen JSON-Daten.
+*   **Fix:** Lokalisierungsschlüssel für Einstellungen korrigiert.
+
 ## v1.3.0 - ApplicationV2, UI Polish & Prompt Refinements
 *   **ApplicationV2 Migration:** Das gesamte Modul wurde auf die moderne Foundry V12+ ApplicationV2 Architektur migriert. Dies sorgt für eine flüssigere UI, besseres Layout-Management und Zukunftssicherheit.
-*   **UI Readability Fix:** Bessere Lesbarkeit im Konflikt-Dialog (dunkle Schrift auf hellem Grund).
-*   **NEU: "Alle neuen übernehmen" Button:** Im Konflikt-Dialog gibt es nun einen "Fast-Forward" Button, um alle KI-Änderungen mit einem Klick zu akzeptieren, statt jeden einzeln auszuwählen.
+*   **UI Polish:** Bessere Lesbarkeit im Konflikt-Dialog, neuer "Alle neuen übernehmen" Button, und Scrollbars (fixes UI overflow).
 *   **Prompt Refinements:**
     *   **Glossar-Konsistenz:** Die KI wurde angewiesen, strikt das Format `Original = Übersetzung` im Glossar zu nutzen, ohne störende Sprach-Labels wie `(English)`.
     *   **Kontext-Intelligenz:** Die Prompts wurden verfeinert, um logische Fehler (wie "Schattenwandeln Zwilling" statt "Schattenzwilling") besser zu korrigieren und intelligent mit Compound-Wörtern umzugehen.

@@ -2,6 +2,18 @@
     "PHILS_PF2E_AI_TRANSLATOR": {
         "UI": {
             "Title": "PF2e Übersetzer",
+            "Settings": {
+                "MaxPromptLength": {
+                    "Name": "Max Prompt-Länge",
+                    "Hint": "Warnschwelle für Zeichenanzahl. Wenn der Prompt länger als dieser Wert ist, wird eine Warnung angezeigt. Erhöhe den Wert, wenn du ein bezahltes KI-Abo mit großem Kontext hast."
+                }
+            },
+            "Markers": {
+                "StartPrompt": "[ANFANG_DER_ANFRAGE]",
+                "EndPrompt": "[ENDE_DER_ANFRAGE]",
+                "StartResponse": "[ANFANG_DER_ANTWORT]",
+                "EndResponse": "[ENDE_DER_ANTWORT]"
+            },
             "BtnCopy": "Übersetzung starten",
             "BtnGrammarCheck": "Grammatik-Check",
             "DefaultTranslate": "Übersetze.",
@@ -10,7 +22,8 @@
             "PromptCopied": "Prompt in die Zwischenablage kopiert!",
             "ResultLabel": "KI-Antwort hier einfügen (JSON):",
             "BtnUpdate": "Journal aktualisieren",
-            "ErrorJsonInvalid": "Kein gültiges JSON gefunden. (Fehlen die ```json Klammern?)",
+            "ErrorJsonInvalid": "Kein gültiges JSON gefunden. Scheinbar unvollständig oder fehlerhaft. (Fehlt [ENDE_DER_ANTWORT]?)",
+            "ErrorIdMismatchHint": "Fehler: JSON-Code scheint unvollständig. Entweder hat die KI halluziniert (fehlende IDs) oder abgebrochen. Bitte prüfe, ob am Ende der KI-Antwort [ENDE_DER_ANTWORT] steht.",
             "BackupCreated": "Backup erstellt: {name}",
             "ErrorGlossaryExists": "AI Glossary existiert bereits! Bitte manuell prüfen.",
             "Success": "{docName} erfolgreich aktualisiert!",
@@ -68,7 +81,9 @@
             "BtnUseAllNew": "Alle neuen übernehmen",
             "LabelOriginalContext": "Original:",
             "LabelNewContext": "Neu (Geschätzt):",
-            "TextContextLost": "(Kontext verloren - Begriff gelöscht)"
+            "TextContextLost": "(Kontext verloren - Begriff gelöscht)",
+            "WarnPromptTooLong": "Warnung: Der generierte Prompt hat {length} Zeichen, was dein eingestelltes Limit von {limit} überschreitet. Große Prompts können abgeschnitten oder abgelehnt werden.",
+            "ErrorIncompleteResponse": "Fehler: Unvollständige KI-Antwort erkannt! Der [ENDE_DER_ANTWORT] Marker fehlt. Bitte versuche es erneut oder reduziere die 'Batch Size'."
         },
         "Prompts": {
             "GrammarCheck": [
@@ -97,7 +112,9 @@
                 "",
                 "### 5. OUTPUT FORMAT (GETRENNT)",
                 "Gib mir ZUERST den JSON-Code, DANACH den Bericht.",
+                "Starte deine Antwort mit `[ANFANG_DER_ANTWORT]` und beende sie mit `[ENDE_DER_ANTWORT]`.",
                 "",
+                "[ANFANG_DER_ANTWORT]",
                 "TEIL 1: JSON",
                 "```json",
                 "{ ... Das vollständige Journal-Objekt ... }",
@@ -106,7 +123,8 @@
                 "TEIL 2: ÄNDERUNGSPROTOKOLL",
                 "Liste inhaltliche Eingriffe auf.",
                 "Format: '• [Original] -> [Korrektur]: Grund'",
-                "Beispiel: '• Schattenwandeln Zwilling -> Schattenzwilling: Kontextfehler korrigiert.'"
+                "Beispiel: '• Schattenwandeln Zwilling -> Schattenzwilling: Kontextfehler korrigiert.'",
+                "[ENDE_DER_ANTWORT]"
             ],
             "TranslateWithGlossary": [
                 "### 1. ROLLE & ZIEL",
@@ -136,7 +154,9 @@
                 "",
                 "### 6. OUTPUT FORMAT (3 TEILE)",
                 "Gib mir 3 Teile zurück. Trenne sie klar.",
+                "Starte deine Antwort mit `[ANFANG_DER_ANTWORT]` und beende sie mit `[ENDE_DER_ANTWORT]`.",
                 "",
+                "[ANFANG_DER_ANTWORT]",
                 "BLOCK 1 (JSON Update):",
                 "```json",
                 "{ ... Journal Object ... }",
@@ -160,7 +180,8 @@
                 "```",
                 "",
                 "BLOCK 3: ÄNDERUNGSPROTOKOLL (TEXT)",
-                "Liste ALLE Abweichungen von den Markern oder spezielle Logik-Korrekturen auf."
+                "Liste ALLE Abweichungen von den Markern oder spezielle Logik-Korrekturen auf.",
+                "[ENDE_DER_ANTWORT]"
             ],
             "TranslateAndCreateGlossary": [
                 "### 1. ROLLE & ZIEL",
@@ -186,7 +207,9 @@
                 "",
                 "### 6. OUTPUT FORMAT (3 TEILE)",
                 "Gib mir 3 Teile zurück.",
+                "Starte deine Antwort mit `[ANFANG_DER_ANTWORT]` und beende sie mit `[ENDE_DER_ANTWORT]`.",
                 "",
+                "[ANFANG_DER_ANTWORT]",
                 "BLOCK 1 (JSON Update):",
                 "```json",
                 "{ ... Journal Object ... }",
@@ -210,7 +233,8 @@
                 "```",
                 "",
                 "BLOCK 3: ÄNDERUNGSPROTOKOLL (TEXT)",
-                "Informiere den Nutzer über Eingriffe (ignoriere Marker, Logik-Korrekturen)."
+                "Informiere den Nutzer über Eingriffe (ignoriere Marker, Logik-Korrekturen).",
+                "[ENDE_DER_ANTWORT]"
             ],
             "GenerateGlossary": [
                 "### 1. ROLLE & ZIEL",

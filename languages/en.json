@@ -2,6 +2,18 @@
     "PHILS_PF2E_AI_TRANSLATOR": {
         "UI": {
             "Title": "PF2e Translator",
+            "Settings": {
+                "MaxPromptLength": {
+                    "Name": "Max Prompt Length",
+                    "Hint": "Warning threshold for prompt character count. If the prompt exceeds this limit, a warning is shown. Increase if you have a paid AI subscription with high context."
+                }
+            },
+            "Markers": {
+                "StartPrompt": "[START_PROMPT]",
+                "EndPrompt": "[END_PROMPT]",
+                "StartResponse": "[START_RESPONSE]",
+                "EndResponse": "[END_RESPONSE]"
+            },
             "BtnCopy": "Start Translation",
             "BtnGrammarCheck": "Grammar Check",
             "DefaultTranslate": "Translate.",
@@ -10,7 +22,8 @@
             "PromptCopied": "Prompt copied to clipboard!",
             "ResultLabel": "Paste AI Response here (JSON):",
             "BtnUpdate": "Update Journal",
-            "ErrorJsonInvalid": "No valid JSON found. (Are the ```json brackets missing?)",
+            "ErrorJsonInvalid": "No valid JSON found. Response might be incomplete. (Check for [END_RESPONSE]?)",
+            "ErrorIdMismatchHint": "Error: JSON code appears incomplete. The AI might have hallucinated (missing IDs) or cut off. Please check if [END_RESPONSE] is present at the end of the AI output.",
             "BackupCreated": "Backup created: {name}",
             "ErrorGlossaryExists": "AI Glossary already exists! Please check manually.",
             "Success": "{docName} successfully updated!",
@@ -68,7 +81,8 @@
             "BtnUseAllNew": "Use All New",
             "LabelOriginalContext": "Original:",
             "LabelNewContext": "New (Est.):",
-            "TextContextLost": "(Context lost - Term deleted)"
+            "TextContextLost": "(Context lost - Term deleted)",
+            "WarnPromptTooLong": "Warning: The generated prompt has {length} characters, which exceeds your configured limit of {limit}. Large prompts might be truncated or rejected by the AI provider."
         },
         "Prompts": {
             "GrammarCheck": [
@@ -93,11 +107,16 @@
                 "  3. WICHTIG: Return these terms WITH the [[...]] brackets! Do NOT add new markers. Do NOT re-number markers (Keep #ID exactly as in input).",
                 "  4. Example Input: 'The [[#12:Mage Hand]] spell.' -> Output: 'The [[#12:Mage Hand]] spell.' (NOT Ghost Hand!)",
                 "",
+                "  4. Example Input: 'The [[#12:Mage Hand]] spell.' -> Output: 'The [[#12:Mage Hand]] spell.' (NOT Ghost Hand!)",
+                "",
                 "### 5. OUTPUT FORMAT",
                 "Return exactly one JSON code block with the corrected texts (and ALL [[...]] markers).",
+                "Start your response with `[START_RESPONSE]` and end it with `[END_RESPONSE]`.",
+                "[START_RESPONSE]",
                 "```json",
                 "{ ... The complete Journal Object with corrected texts ... }",
-                "```"
+                "```",
+                "[END_RESPONSE]"
             ],
             "TranslateWithGlossary": [
                 "### 1. ROLE & GOAL",
@@ -125,7 +144,9 @@
                 "",
                 "### 5. OUTPUT FORMAT (2 CODE BLOCKS)",
                 "Return exactly two separate JSON code blocks.",
+                "Start your response with `[START_RESPONSE]` and end it with `[END_RESPONSE]`.",
                 "",
+                "[START_RESPONSE]",
                 "BLOCK 1 (Translation Update):",
                 "```json",
                 "{ ... The complete Journal Object with translated texts and names, KEEP ALL IDs ... }",
@@ -147,7 +168,8 @@
                 "  ]",
                 "}",
                 "```",
-                "If no new terms are found, please state this as text after the translation (no empty JSON object)."
+                "If no new terms are found, please state this as text after the translation (no empty JSON object).",
+                "[END_RESPONSE]"
             ],
             "TranslateAndCreateGlossary": [
                 "### 1. ROLE & GOAL",
@@ -175,7 +197,9 @@
                 "",
                 "### 5. OUTPUT FORMAT (2 CODE BLOCKS)",
                 "Return exactly two separate JSON code blocks.",
+                "Start your response with `[START_RESPONSE]` and end it with `[END_RESPONSE]`.",
                 "",
+                "[START_RESPONSE]",
                 "BLOCK 1 (Translation Update):",
                 "```json",
                 "{ ... The complete Journal Object with translated texts and names, KEEP ALL IDs ... }",
@@ -197,7 +221,8 @@
                 "  ]",
                 "}",
                 "```",
-                "If no terms are found for the glossary, please state this as text after the translation (no empty JSON object)."
+                "If no terms are found for the glossary, please state this as text after the translation (no empty JSON object).",
+                "[END_RESPONSE]"
             ],
             "GenerateGlossary": [
                 "### 1. ROLE & GOAL",

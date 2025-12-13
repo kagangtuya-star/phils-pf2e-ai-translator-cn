@@ -264,7 +264,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
     }
 
     if (!translationJson && !glossaryJournalJson) {
-        return loc('ErrorJsonInvalid') || "No valid Translation JSON found in response. (Missing ```json blocks?)";
+        return loc('ErrorJsonInvalid') || "No valid Translation JSON found in response. (Missing ```json blocks? or Incomplete Response?)";
     }
 
     try {
@@ -739,7 +739,7 @@ export async function applyResolvedUpdate(doc, jsonData, resolutions = {}, proce
         }
 
         if (validationErrors.length > 0) {
-            const errorMsg = "ID Verification Failed:\n" + validationErrors.join("\n");
+            const errorMsg = loc('ErrorIdMismatchHint') + "\n\n" + "ID Verification Failed:\n" + validationErrors.join("\n");
             console.warn(errorMsg);
             ui.notifications.error("Translation rejected due to ID errors. Check console for details.");
             return errorMsg;

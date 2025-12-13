@@ -438,10 +438,33 @@ export class TranslationResultApp extends HandlebarsApplicationMixin(Application
 
     static async onUpdate(event, target) {
         const formData = new FormData(this.element);
-        const text = formData.get("aiResponse");
+        let text = formData.get("aiResponse");
 
         if (text) {
-            // Validate
+            // 1. Validation: markers
+            // Dynamic Markers
+            const startMarker = loc('Markers.StartResponse') || "[START_RESPONSE]";
+            const endMarker = loc('Markers.EndResponse') || "[END_RESPONSE]";
+
+            // Check for [END_RESPONSE] (or localized equivalent)
+            if (!text.includes(endMarker)) {
+                // FALLBACK: User might have copied ONLY the JSON code block.
+                // If we see "```json" or a starting "{", we treat it as valid manual input.
+                if (text.includes("```json") || text.trim().startsWith("{")) {
+                    console.warn("Phils Translator | Markers missing, but JSON structure detected. Proceeding.");
+                } else {
+                    const errorText = (loc('ErrorIncompleteResponse') || "Error: Incomplete AI Response detected!").replace("[END_RESPONSE]", endMarker);
+                    this.errorMsg = errorText;
+                    this.initialContent = text;
+                    this.render();
+                    return;
+                }
+            } else {
+                // Safe to clean
+                text = text.replace(startMarker, "").replace(endMarker, "").trim();
+            }
+
+            // Validate Glossary JSON confusion
             if (!this.isGlossaryMode && (text.includes('"name": "AI Glossary"') || text.includes('"name": "AI Glossar"'))) {
                 const errorText = loc('ErrorGlossaryInTranslation') || "Error: It looks like you pasted the Glossary JSON here.";
                 this.errorMsg = errorText;
@@ -707,22 +730,50 @@ async function prepareGrammarCheckPrompt(doc, userPrompt, systemName, sendFull, 
 
 async function copyAndOpen(text, doc, isUpdateMode, targetUrl, expectGlossaryCreation = false, expectGlossaryUpdate = false, isGlossaryMode = false, processingMode = 'translate', selectedPages = null) {
     if (!text) { ui.notifications.error(loc('ErrorEmptyPrompt') || "Error: Empty Prompt"); return; }
-    try {
-        await navigator.clipboard.writeText(text);
-        ui.notifications.info(loc('PromptCopied') || "Prompt copied to clipboard!");
-        window.open(targetUrl, "_blank");
-        if (isUpdateMode) {
-            new TranslationResultApp({
-                document: doc,
-                initialContent: "",
-                expectGlossaryCreation: expectGlossaryCreation,
-                expectGlossaryUpdate: expectGlossaryUpdate,
-                isGlossaryMode: isGlossaryMode,
-                processingMode: processingMode,
-                selectedPages: selectedPages
-            }).render(true);
-        }
-    } catch (err) { ui.notifications.error(loc('ErrorCopyFailed') || "Copy failed"); }
+
+    // Add Markers (Localized)
+    const startP = loc('Markers.StartPrompt') || "[START_PROMPT]";
+    const endP = loc('Markers.EndPrompt') || "[END_PROMPT]";
+    const finalizedPrompt = `${startP}\n${text}\n${endP}`;
+
+    // Check Length
+    const maxLen = game.settings.get(MODULE_ID, 'maxPromptLength') || 100000;
+
+    const executeCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(finalizedPrompt);
+            ui.notifications.info(loc('PromptCopied') || "Prompt copied to clipboard!");
+            window.open(targetUrl, "_blank");
+            if (isUpdateMode) {
+                new TranslationResultApp({
+                    document: doc,
+                    initialContent: "",
+                    expectGlossaryCreation: expectGlossaryCreation,
+                    expectGlossaryUpdate: expectGlossaryUpdate,
+                    isGlossaryMode: isGlossaryMode,
+                    processingMode: processingMode,
+                    selectedPages: selectedPages
+                }).render(true);
+            }
+        } catch (err) { ui.notifications.error(loc('ErrorCopyFailed') || "Copy failed"); }
+    };
+
+    if (finalizedPrompt.length > maxLen) {
+        new ConfirmationApp({
+            title: "Prompt Size Warning",
+            content: loc('WarnPromptTooLong', { length: finalizedPrompt.length, limit: maxLen }) || `Warning: Prompt too long (${finalizedPrompt.length} > ${maxLen}).`,
+            buttons: [
+                { action: 'proceed', label: loc('BtnProceedAnyway') || "Proceed Anyway", icon: "fas fa-exclamation-triangle" },
+                { action: 'cancel', label: loc('BtnCancel') || "Cancel", icon: "fas fa-times" }
+            ],
+            callbacks: {
+                proceed: executeCopy,
+                cancel: () => { }
+            }
+        }).render(true);
+    } else {
+        await executeCopy();
+    }
 }
 
 function checkNextBatch(doc, processingMode = 'translate') {

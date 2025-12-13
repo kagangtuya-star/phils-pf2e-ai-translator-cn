@@ -6,7 +6,7 @@
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![System](https://img.shields.io/badge/System-PF2e-blue)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
-[![Version](https://img.shields.io/badge/Version-1.3.0-orange)](https://github.com/PhilsModules/phils-pf2e-ai-translator/releases)
+[![Version](https://img.shields.io/badge/Version-1.3.1-orange)](https://github.com/PhilsModules/phils-pf2e-ai-translator/releases)
 [![Patreon](https://img.shields.io/badge/SUPPORT-Patreon-ff424d?logo=patreon)](https://www.patreon.com/PhilsModules)
 
 <br>
@@ -35,14 +35,6 @@
 > **Deutsch:** Das Konzept und der Workflow dieses Moduls wurden von **Jan Wagner (Primetide), Head of Digital bei Ulisses Spiele**, geprüft und freigegeben.
 > Es wurde bestätigt, dass dieser technische Ansatz (Mapping bestehender Glossar-Begriffe für den privaten Gebrauch) den Community-Richtlinien entspricht und das geistige Eigentum von **Ulisses Spiele** und **Paizo** respektiert.
 
-> [!NOTE]
-> ### 🤖 AI Compatibility & Token Limits / KI-Modelle & Limits
-> **English:** This module was developed and tested primarily for **Google Gemini (Pro/Advanced)**.
-> Every AI model has a specific limit on how much text it can process at once (Context Window / Token Limit). If you encounter errors (e.g., broken JSON or cut-off text), try **reducing the number of pages** selected for translation.
->
-> **Deutsch:** Dieses Modul wurde primär für **Google Gemini (Pro/Advanced)** entwickelt und getestet.
-> Jedes KI-Modell hat eine Obergrenze, wie viel Text es auf einmal verarbeiten kann (Kontext-Fenster / Token-Limit). Sollten Fehler auftreten (z. B. kaputtes JSON oder abgehackter Text), versuche bitte, die **Anzahl der gleichzeitig ausgewählten Seiten zu reduzieren**.
-
 
 # <img src="https://flagcdn.com/48x36/de.png" width="28" height="21" alt="DE"> Deutsche Anleitung
 
@@ -53,6 +45,8 @@ Phil's Pf2e Ai Translator verbindet deine Foundry VTT Welt mit der Power moderne
 > 🧙‍♂️ **Deep Dive:** Willst du wissen, wie der "Grammatik-Schutzschild" und die "KI-Geiselnahme" genau funktionieren? Lies das [Grimoire der Faulheit (funktion.md)](funktion.md).
 >
 > 🧐 **Für das gehobene Auditorium:** Bevorzugst du eine eloquente Ausdrucksweise? [Exegese der Systemarchitektur](funktionen.md).
+>
+> 📖 **Hier geht es zur** [ausführlichen Anleitung](anleitung.md).
 
 ## 🚀 Funktionen
 
@@ -71,23 +65,23 @@ Phil's Pf2e Ai Translator verbindet deine Foundry VTT Welt mit der Power moderne
 3.  Klicke auf **Install Module**.
 4.  Füge die folgende **Manifest URL** unten ein:
     ```text
-    [https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json](https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json)
+    https://github.com/PhilsModules/phils-pf2e-ai-translator/releases/latest/download/module.json
     ```
 5.  Klicke auf **Install**.
 
 ## 📖 Bedienung
 
 ### Workflow A: Übersetzung (Grüner Haken ✅)
-1.  **Seiten wählen**: Wähle die Seiten, die du übersetzen möchtest. *Tipp: Wähle bei langen Texten weniger Seiten aus, um das Token-Limit der KI nicht zu sprengen.*
+1.  **Seiten wählen**: Wähle die Seiten, die du übersetzen möchtest.
 2.  **Prompt generieren**: Klicke auf **"Übersetzung starten"**.
-3.  **KI-Verarbeitung**: Prompt bei Google Gemini (empfohlen) oder ChatGPT einfügen -> Antwort kopieren (JSON).
+3.  **KI-Verarbeitung**: Prompt bei ChatGPT/Claude einfügen -> Antwort kopieren (JSON).
 4.  **Update**: In Foundry einfügen -> **"Journal aktualisieren"**.
 5.  **Loop**: Das Modul prüft automatisch auf verbleibende Seiten. Falls vorhanden, öffnet sich das nächste Fenster **automatisch vorausgewählt** für die Übersetzung.
 
 ### Workflow B: Grammatik-Check (Blauer Haken 🧙‍♂️)
 1.  **Seiten wählen**: Wähle Seiten (auch bereits übersetzte) für die Grammatikprüfung.
 2.  **Prompt generieren**: Klicke auf **"Grammatik Check"**.
-3.  **KI-Verarbeitung**: Prompt bei der KI einfügen -> Antwort kopieren (JSON).
+3.  **KI-Verarbeitung**: Prompt bei ChatGPT/Claude einfügen -> Antwort kopieren (JSON).
 4.  **Update**: In Foundry einfügen -> **"Journal aktualisieren"**.
 5.  **Konfliktlösung**: Wenn die KI geschützte Begriffe ändern will (z.B. "Feuerball" -> "Flammenkugel"), erscheint ein Warndialog. Du entscheidest: Original behalten oder Änderung akzeptieren?
 
@@ -110,16 +104,16 @@ This module helps you to translate **large adventure modules** or long texts in 
 ## 📖 How to Use
 
 ### Workflow A: Translation (Green Check ✅)
-1.  **Select Pages**: Choose the pages you want to translate. *Tip: For very long texts, select fewer pages to avoid hitting the AI's token limit.*
+1.  **Select Pages**: Choose the pages you want to translate.
 2.  **Generate Prompt**: Click **"Copy Prompt"**.
-3.  **AI Processing**: Paste into Google Gemini (recommended) or ChatGPT -> Copy Response (JSON).
+3.  **AI Processing**: Paste into ChatGPT/Claude -> Copy Response (JSON).
 4.  **Update**: Paste into Foundry -> **"Update Journal"**.
 5.  **Loop**: The module automatically checks for remaining pages. If found, it opens the next window **pre-selected** for translation.
 
 ### Workflow B: Grammar Check (Blue Spell Check 🧙‍♂️)
 1.  **Select Pages**: Choose pages (even if already translated) to check grammar.
 2.  **Generate Prompt**: Click **"Grammar Check"**.
-3.  **AI Processing**: Paste into AI -> Copy Response (JSON).
+3.  **AI Processing**: Paste into ChatGPT/Claude -> Copy Response (JSON).
 4.  **Update**: Paste into Foundry -> **"Update Journal"**.
 5.  **Conflict Resolution**: If the AI tries to change protected terms, a warning dialog appears. You decide: Keep Original or Accept Change?
 
@@ -156,4 +150,5 @@ Portions of this module utilize data from the [Pathfinder German Translation mod
     <br><br>
     <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
 </div>
+
 
