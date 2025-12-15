@@ -1,4 +1,9 @@
+## v1.4.3 - Prompt Precision & Code Cleanup
+*   **Prompt-Optimierung:** Die Anweisung für das Namens-Format wurde sprachlich und logisch präzisiert ("außer im Glossar"), um Konflikte mit dem Glossar-Namen ("AI Glossary") zu vermeiden.
+*   **Code-Optimierung:** Bereinigung interner Logik und Entfernung von Debug-Artefakten für eine sauberere Codebasis.
+
 ## v1.4.2 - Prompt Optimierung & Fixes
+*   (Merged into v1.4.3)
 *   **Prompt-Refinement:** Die Anweisung für das Namens-Format wurde sprachlich und logisch präzisiert ("außer im Glossar"), um Konflikte mit dem Glossar-Namen ("AI Glossary") zu vermeiden.
 
 ## v1.4.1 - Non-Blocking Workflow & UI Polish
@@ -79,7 +84,7 @@
 *   **Verbessert: Prompt-Sicherheit:**
     *   Prompts wurden weiter gehärtet, um Halluzinationen bei JSON-Strukturen zu minimieren.
 *   **Code Cleanup:**
-    *   Der Code wurde entrümpelt und optimiert. Keine "KI-Überreste" mehr in den Logs.
+    *   Der Code wurde entrümpelt und optimiert. Verbesserte Log-Ausgaben.
 
 ## v1.1.5 - UX Polishing & Bugfixes
 *   **BUGFIX: Dialog-Reihenfolge:**

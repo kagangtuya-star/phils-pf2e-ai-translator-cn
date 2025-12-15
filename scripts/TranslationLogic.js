@@ -1,5 +1,5 @@
 export const MODULE_ID = 'phils-pf2e-ai-translator';
-console.log("!!! PHILS TRANSLATOR LOGIC LOADED v4.4 - SCOPE AWARENESS !!!");
+console.log("Phils Translator | Logic loaded");
 import { DictionaryLoader } from "./DictionaryLoader.js";
 import { TermReplacer } from "./TermReplacer.js";
 
@@ -80,7 +80,7 @@ export function resolvePrompt(key, data) {
 
 
 // --- GLOBAL GLOSSARY STATE ---
-// DEPRECATED: GLOSSARY_MAP removed in favor of local state injection (v5.0)
+// --- GLOBAL GLOSSARY STATE ---
 // -----------------------------
 
 // Helper to load dictionary (Shared)
@@ -140,7 +140,7 @@ export async function injectGlossaryMarkers(docData) {
             return part.replace(regex, (match) => {
                 termCounter++;
                 const id = `#${termCounter}`;
-                // Store Term AND Scope ID (v4.4 Scope Awareness)
+                // Store Term AND Scope ID
                 glossaryMap.set(id, { term: match, scopeId: scopeId });
                 return `[[${id}:${match}]]`;
             });
@@ -398,7 +398,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
                                 rawSnippet = rawSnippet.replace(searchPattern, `<b style="color:#d00; text-decoration:underline;">${term}</b>`);
 
                                 // 2. Clean ALL other markers: [[#ID:Content]] -> Content
-                                // v4.5.2 FIX: Use Robust Regex for cleaning to match scanConflicts compatibility
+                                // Clean markers
                                 rawSnippet = rawSnippet.replace(/\[\[\s*#?(\d+)\s*:\s*(.*?)\s*\]\]/g, "$2");
 
                                 context = rawSnippet;
@@ -413,7 +413,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
                     return context;
                 };
 
-                // Helper: Recover context via Deterministic Neighbor Interpolation (v4.3 - Robust Regex)
+                // Helper: Recover context via Deterministic Neighbor Interpolation
                 const recoverContext = (targetId, jsonData, referenceData) => {
                     try {
                         const jsonString = JSON.stringify(jsonData);
@@ -470,9 +470,8 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
                             }
                         }
 
-                        // v4.5.5 FIX: Hybrid Cleaning Strategy
-                        // Problem: v4.5.4 failed for gaps INSIDE a long string (no quotes found).
-                        // Solution: Determine if gap contains JSON structure or is pure text.
+                        // Hybrid Cleaning Strategy
+                        // Determine if gap contains JSON structure or is pure text.
 
                         let cleanGap = "";
 
@@ -516,7 +515,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
 
                         if (cleanGap.length > 250) cleanGap = cleanGap.substring(0, 250) + "...";
 
-                        console.log(`[Phils Translator v4.5.5] Gap Found between ${startMarker} and ${endMarker}`);
+                        console.log(`[Phils Translator] Gap Found between ${startMarker} and ${endMarker}`);
                         return `[... ${cleanGap} ...] (Zwischen ${startMarker} & ${endMarker})`;
 
 
@@ -530,10 +529,10 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
 
                 // To get ORIGINAL Context, we need the original text with markers.
                 // This is where glossaryMap is supposed to be populated.
-                // v5.0: Now returns object with map
+                // To get ORIGINAL Context, we need the original text with markers.
                 const { processedData: referenceData, glossaryMap } = await injectGlossaryMarkers(getCleanData(doc, true, selectedPageIds));
 
-                // IDENTIFY UPDATED SCOPES (v4.4)
+                // IDENTIFY UPDATED SCOPES
                 // We scan jsonData to see which IDs (Pages/Items) are present.
                 // Any term belonging to a Scope ID NOT in this list will be ignored.
                 const updatedScopes = new Set();
@@ -554,7 +553,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
                 // Check for MODIFIED Terms
                 const scanConflicts = (obj) => {
                     if (typeof obj === 'string') {
-                        // v4.5 Fix: Robust Regex for Conflict Detection
+                        // Robust Regex for Conflict Detection
                         // Matches: [[ # 123 : Term ]] (tolerant to spaces)
                         const matches = [...obj.matchAll(/\[\[\s*#?(\d+)\s*:\s*(.*?)\s*\]\]/g)];
                         for (const match of matches) {
@@ -601,7 +600,7 @@ export async function processUpdate(doc, rawText, processingMode = 'translate', 
                         continue;
                     }
 
-                    // 2. EXISTENCE CHECK (v4.3 Regex)
+                    // 2. EXISTENCE CHECK
                     const match = findIdIndex(jsonString, id);
 
                     if (!match) {
