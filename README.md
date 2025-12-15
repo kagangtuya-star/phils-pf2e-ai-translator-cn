@@ -146,6 +146,8 @@ Portions of this module utilize data from the [Pathfinder German Translation mod
 **Phil's PF2e AI Translator** is licensed under the [GPL-3.0 License](LICENSE).
 
 
+---
+
 ## 🐛 Bekannte ~~Bugs~~ Features
 
 
@@ -199,6 +201,7 @@ Since this module acts as a "middleman" between Foundry and an external AI, most
     <br><br>
     <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
 </div>
+
 
 
 
