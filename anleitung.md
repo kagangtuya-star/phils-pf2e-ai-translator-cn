@@ -31,12 +31,20 @@ Im Konfigurationsfenster:
 2.  Klicke in das Textfeld und drücke `STRG+V` (Einfügen).
 3.  Sende die Nachricht ab.
 
-### D. Antwort verarbeiten
-1.  Warte, bis die KI vollständig fertig ist.
-2.  **Kopieren**: Kopiere die **gesamte** Antwort der KI.
-    * *Wichtig:* Achte darauf, dass alles zwischen `[ANFANG_DER_ANTWORT]` und `[ENDE_DER_ANTWORT]` enthalten ist. Kopiere insbesondere die Code-Blöcke (alles zwischen ```json und ```) vollständig.
-3.  Zurück in Foundry VTT: Füge den Text im "Resultat"-Fenster mit `STRG+V` ein.
-4.  Klicke auf `Journal aktualisieren`.
+4. ### 4. Antwort verarbeiten
+Die KI antwortet mit **zwei separaten Blöcken**. Füge diese **nacheinander** ein:
+
+1.  **Block 1 (Übersetzung):**
+    *   Kopiere den **ersten JSON-Code-Block** (unter "BLOCK 1").
+    *   Füge ihn in das Textfeld des Moduls ein.
+    *   Klicke auf **"Aktualisieren"**.
+    *   *Das Journal wird nun aktualisiert.*
+
+2.  **Block 2 (Glossar):**
+    *   Nach dem ersten Schritt öffnet sich (falls nötig) automatisch ein **neues Fenster** ("Glossar aktualisieren" oder "Glossar JSON").
+    *   Kopiere nun den **zweiten JSON-Code-Block** aus der KI-Antwort (unter "BLOCK 2").
+    *   Füge ihn in dieses neue Fenster ein und bestätige.
+    *   *Dein 'AI Glossary' wird nun mit den neuen Begriffen erweitert.*
 
 ---
 
