@@ -1,8 +1,13 @@
+## v1.4.2 - Prompt Optimierung & Fixes
+*   **Prompt-Refinement:** Die Anweisung für das Namens-Format wurde sprachlich und logisch präzisiert ("außer im Glossar"), um Konflikte mit dem Glossar-Namen ("AI Glossary") zu vermeiden.
+
 ## v1.4.1 - Non-Blocking Workflow & UI Polish
 *   **Workflow:** Der "Prompt kopieren" Prozess ist nun **non-blocking**. Das Konfigurations-Fenster schließt sich automatisch, damit du freie Sicht auf deinen Browser hast.
 *   **Workflow:** Das Konfigurations-Fenster öffnet sich nun **immer** automatisch wieder, nachdem du ein Update machst oder den Dialog abbrichst. Du verlierst so nie deinen Platz.
 *   **UI:** "Alle" und "Keine" Buttons wurden zu einem smarten **Toggle-Button** zusammengefasst.
 *   **Fix:** "Alles Auswählen" Logik repariert.
+
+
 
 ## v1.4.0 - Retroactive Statistics
 *   **NEU: Übersetzungs-Statistik:** Ein neues Statistik-Feature (erreichbar über den "Statistik"-Button im Hauptmenü) zeigt dir genau an, wie viel Arbeit dir das Modul bereits abgenommen hat.
